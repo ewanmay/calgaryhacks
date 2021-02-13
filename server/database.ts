@@ -3,6 +3,7 @@ const sqlite3 = require('sqlite3').verbose()
 const DBSOURCE = 'db.sqlite'
 
 class Database {
+  db: any
   constructor() {
     this.db = new sqlite3.Database(DBSOURCE, (err) => {
       if (err) {
@@ -12,8 +13,6 @@ class Database {
       } else {
         console.log('Connected to SQLite database.')
         this.makeUserTable()
-        this.makeMatchHistoryTable()
-        this.makeUserMatchHistoryTable()
       }
     })
   }
@@ -23,8 +22,9 @@ class Database {
       `CREATE TABLE user (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username text NOT NULL UNIQUE, 
+        email text NOT NULL UNIQUE, 
         password text NOT NULL,
-        isAdmin integer default 0
+        steam_id text
       )`,
       (err) => {
         if (err) {
@@ -32,11 +32,14 @@ class Database {
           console.log('SQLite found table: user')
         } else {
           // Table just created, creating some rows
+          // TODO remove when want to remove seed users
           console.log('SQLite creating table: user')
-          const insert =
-            'INSERT INTO user (username, password, isAdmin) VALUES (?,?,?)'
-          this.db.run(insert, ['admin', 'admin123456', 1])
-          this.db.run(insert, ['user', 'user123456', 0])
+          const insert = 'INSERT INTO user (username, password, email) VALUES (?,?,?)'
+          console.log('SQLite adding seed users')
+          this.db.run(insert, ['ross', '123', 'ross@test.com'])
+          this.db.run(insert, ['ewan', '123', 'ewan@test.com'])
+          this.db.run(insert, ['dylan','123', 'dylan@test.com'])
+          this.db.run(insert, ['antoine', '123', 'antoine@test.com'])
         }
       }
     )
@@ -48,15 +51,25 @@ class Database {
    *   - row: the sql row returned with user that was found.
    *   - undefined: user was not found
    */
-  getUserInfo(username, password, callback) {
-    const sql = 'select * from user where username = ? and password = ?'
-    const params = [username, password]
+  getUserInfo(username, callback) {
+    const sql = 'select * from user where username = ?'
+    const params = [username]
 
     this.db.get(sql, params, (err, row) => {
       if (err) {
         return callback(err.message)
       }
+      return callback(row)
+    })
+  }
 
+  login(username, password, callback) {
+    const sql = 'select * from user where username = ? and password = ?'
+    const params = [username, password]
+    this.db.get(sql, params, (err, row) => {
+      if (err) {
+        return callback(err.message)
+      }
       return callback(row)
     })
   }
@@ -64,15 +77,28 @@ class Database {
   /*
    *   Please note the callback may not get called immediately.
    */
-  addNewUser(username, password, callback) {
-    const sql = 'INSERT INTO user (username, password) VALUES (?,?)'
-    const params = [username, password]
+  addNewUser(username, password, email, callback) {
+    const sql = 'INSERT INTO user (username, password, email) VALUES (?,?,?)'
+    const params = [username, password, email]
     this.db.run(sql, params, function (err, result) {
       if (err) {
         return callback(err.message)
       }
       return callback({ id: this.lastID })
     })
+  }
+
+  addSteamId(username, steamId, callback) {
+    const sql = 'UPDATE user set steam_id = ? WHERE username = ?'
+    const params = [steamId, username]
+    this.db.run(sql, params, function (err, result) {
+      if (err) {
+        console.log('ERROR addSteamId', err.message)
+        return callback(false)
+      }
+      return callback(true)
+    })
+
   }
 
 }

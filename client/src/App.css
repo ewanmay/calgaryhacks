@@ -38,3 +38,15 @@
   text-align: start;
   vertical-align: center;
 }
+
+.column {
+  flex-direction: column;
+}
+
+.pointer{
+  cursor: pointer;
+}
+
+.space-between {
+  justify-content: space-between;
+}

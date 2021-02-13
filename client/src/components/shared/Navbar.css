@@ -1,0 +1,13 @@
+.navbar {
+  border-bottom: 2px solid coral;
+  color: black
+}
+
+.navlink{
+  text-decoration: none;
+}
+
+
+.navlink:hover{
+  text-decoration: none;
+}
