@@ -1,6 +1,6 @@
+import React, { ChangeEvent, RefObject, useContext, useRef, useState, useEffect } from 'react';
 import { faClipboard } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { ChangeEvent, useContext, useState } from 'react';
 import { Button, FormControl, InputGroup } from 'react-bootstrap';
 import 'react-chat-widget/lib/styles.css';
 import { AppContext } from '../../context/context';
@@ -14,6 +14,14 @@ function Groups() {
   const [state, dispatch] = useContext(AppContext)
   const [lobbyCode, setLobbyCode] = useState('')
   const [inLobby, setInLobby] = useState(false)
+  const inputRef = useRef({}) as RefObject<HTMLInputElement>
+
+  useEffect(() => {
+    return () => {
+      console.log('leaving')
+      leaveLobby()
+    }
+  }, [])
 
   const createLobby = () => {
     // Ask server to create lobby
@@ -41,8 +49,7 @@ function Groups() {
 
   const leaveLobby = () => {
     console.log("leaving lobby")
-    state.socket.emit('leave-lobby')
-
+    state.socket.emit('leave-lobby', state.authState.username)
     setInLobby(false)
     setLobbyCode('')
   }
@@ -60,7 +67,13 @@ function Groups() {
                 className="col-12"
                 aria-label="Lobby Code"
                 aria-describedby="basic-addon1"
-                onChange={(value: ChangeEvent<any>) => setLobbyCode(value.target.value)}
+                ref={inputRef}
+                onChange={(value: ChangeEvent<any>) => {
+                  if (inputRef && inputRef.current) {                    
+                    inputRef.current.value = value.target.value.toUpperCase()
+                  }
+                  setLobbyCode(value.target.value.toUpperCase())
+                }}
               />
               <InputGroup.Append>
                 <Button onClick={() => joinLobby()}>Join Lobby</Button>
@@ -76,18 +89,19 @@ function Groups() {
       {inLobby && (
         <>
           <div id='groups'>
+            <VideoChat roomName={lobbyCode} />
             <div id="groups-main">
               <div id="groups-left">
                 <div className="p-3">
-                  <div className='flex row' style={{alignItems: 'center'}}>
+                  <div className='flex row' style={{ alignItems: 'center' }}>
                     <Button onClick={() => leaveLobby()}>Leave Lobby</Button>
-                    <b className="pl-3" id='code' style={{fontFamily: 'monospace', fontSize: 17}}>Code: {lobbyCode}</b>
-                    <div className='pointer' onClick={() => {navigator.clipboard.writeText(lobbyCode)}}>
-                      <FontAwesomeIcon icon={faClipboard} style={{marginLeft: 5}}></FontAwesomeIcon>
+                    <b className="pl-3" id='code' style={{ fontFamily: 'monospace', fontSize: 17 }}>Code: {lobbyCode}</b>
+                    <div className='pointer' onClick={() => { navigator.clipboard.writeText(lobbyCode) }}>
+                      <FontAwesomeIcon icon={faClipboard} style={{ marginLeft: 5 }}></FontAwesomeIcon>
                     </div>
                   </div>
                 </div>
-                <Userlist />                
+                <Userlist />
               </div>
               <div id="groups-middle">
                 <CommonGames></CommonGames>
@@ -96,8 +110,7 @@ function Groups() {
                 <h5>Chat</h5>
                 <Chat />
               </div>
-            </div>          
-            <VideoChat roomName={lobbyCode}/>
+            </div>
           </div>
         </>
       )}

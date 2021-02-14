@@ -43,8 +43,8 @@ function Register() {
   }
 
   return (
-    <div className="col-12 p-0 flex center">
-      <div className="col-3 p-0 flex center">
+    <div className="col-12 p-0 flex center fill">
+      <div className="col-4 p-0 flex center">
         <h3>Join the club</h3>
         <div className="error-message col-12">
           {state.authState.errorMessage}

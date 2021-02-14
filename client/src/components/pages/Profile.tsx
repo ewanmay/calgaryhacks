@@ -49,10 +49,10 @@ function Profile() {
                     <b>{game.name}</b>
                     <i> (Steam)</i>
                   </a>
-                  <div className="col-3">
+                  <div className="col-3 flex center">
                     {game.minPlayers && game.maxPlayers &&
                       (<div className="">
-                        {game.minPlayers}-{game.maxPlayers}
+                        {game.minPlayers}-{game.maxPlayers} players
                       </div>)
                     }
                     {!game.minPlayers && !game.maxPlayers &&

@@ -18,8 +18,8 @@ class Database {
         this.makeSteamGameTable() 
         this.makeUserSteamGamesTable()
         this.makeFreeGameTable()
-        // this.makeFriendRequestTable()
-        // this.makeFriendTable()
+        this.makeFriendRequestTable()
+        this.makeFriendTable()
       }
     })
   }
@@ -122,7 +122,7 @@ class Database {
         if (err) {
           // Table already created
           // console.log("Error: ", err)
-          console.log('SQLite found table: user')
+          console.log('SQLite found table: friend')
         } 
       }
     )
@@ -133,9 +133,22 @@ class Database {
     const params = [username1, username2]
     this.db.run(sql, params, function (err, result) {
       if (err) {
+        console.log('ERROR ', err.message)
         return callback(err.message)
       }
       return callback({ id: this.lastID })
+    })
+  }
+
+  getUserFriends(username, callback){
+    const sql = 'SELECT * FROM friend WHERE username1 = ?'
+    const params = [username]
+    this.db.get(sql, params, function (err, row) {
+      if (err) {
+        console.log('ERROR ', err.message)
+        return callback(err.message)
+      }
+      return callback(row)
     })
   }
 
@@ -143,24 +156,25 @@ class Database {
     this.db.run(
       `CREATE TABLE friend_request (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        from text NOT NULL, 
-        to text NOT NULL
+        sending text NOT NULL, 
+        receiving text NOT NULL
       )`,
       (err) => {
         if (err) {
           // Table already created
           // console.log("Error: ", err)
-          console.log('SQLite found table: user')
+          console.log('SQLite found table: friend_request')
         } 
       }
     )
   }
 
-  addFriendRequest(from: string, to:string, callback){
-    const sql = 'INSERT INTO friend_request (from, to) VALUES (?,?)'
-    const params = [from, to]
+  addFriendRequest(sending: string, receiving:string, callback){
+    const sql = 'INSERT INTO friend_request (sending, receiving) VALUES (?,?)'
+    const params = [sending, receiving]
     this.db.run(sql, params, function (err, result) {
       if (err) {
+        console.log('ERROR ', err.message) 
         return callback(false)
       }
       return callback(true)
@@ -170,8 +184,9 @@ class Database {
   getFriendRequest(id: number, callback){
     const sql = 'SELECT * FROM friend_request WHERE id = ?'
     const params = [id]
-    this.db.run(sql, params, function (err, row) {
+    this.db.get(sql, params, function (err, row) {
       if (err) {
+        console.log('ERROR ', err.message)
         return callback(err.message)
       }
       return callback(row)
@@ -179,10 +194,11 @@ class Database {
   }
 
   getIncommingRequests(username: string, callback){
-    const sql = 'SELECT * FROM friend_request WHERE to = ?'
+    const sql = 'SELECT * FROM friend_request WHERE sending = ?'
     const params = [username]
     this.db.all(sql, params, function (err, rows) {
       if (err) {
+        console.log('ERROR ', err.message)
         return callback(err.message)
       }
       return callback(rows)
@@ -190,10 +206,11 @@ class Database {
   }
 
   getOutgoingRequests(username: string, callback){
-    const sql = 'SELECT * FROM friend_request WHERE from = ?'
+    const sql = 'SELECT * FROM friend_request WHERE receiving = ?'
     const params = [username]
     this.db.all(sql, params, function (err, rows) {
       if (err) {
+        console.log('ERROR ', err.message)
         return callback(err.message)
       }
       return callback(rows)
@@ -249,17 +266,6 @@ class Database {
   }
 
   getUserSteamGames(username, callback){
-
-    console.log("Using username: " + username)
-    const sql = 'SELECT * FROM user_steam_games INNER JOIN steam_game ON user_steam_games.appid=steam_game.appid WHERE user_steam_games.username=?' 
-    const params = [username]
-    this.db.all(sql, params, function (err, rows) {
-      if (err) {
-      }
-      console.log("[getUserSteamInfo]: ", rows)
-    })
-
-    console.log("Using username: " + username)
     const newSql = 'SELECT * FROM user_steam_games INNER JOIN steam_game ON user_steam_games.appid=steam_game.appid WHERE user_steam_games.username=?' 
     // const sql = 'SELECT * FROM user_steam_games INNER JOIN steam_game ON user_steam_games.appid=steam_game.appid' 
     const newParams = [username]
@@ -297,16 +303,16 @@ class Database {
     })
   }
 
-  addUserSteamGame(appid, username: string){
+  addUserSteamGame(appid, username: string, callback){
     const userGamesListSql = 'INSERT INTO user_steam_games (appid, username) VALUES (?, ?)'
     const userGamesParams = [appid, username]
-    this.db.run(userGamesListSql, userGamesParams, () => {})
+    this.db.run(userGamesListSql, userGamesParams, () => callback(appid))
   }
 
   getUserSteamGame(appid, username: string, callback){
-    const sql = 'SELECT * from user_steam_games where appid = ? and username = ?'
+    const sql = 'SELECT * from user_steam_games WHERE appid = ? AND username = ?'
     const params = [appid,username]
-    this.db.run(sql, params, (err, row) => {
+    this.db.get(sql, params, (err, row) => {
       if (err) {
         console.log('ERROR getUserSteamGame', err.message)
         return callback(err.message, appid)

@@ -9,6 +9,7 @@ import Profile from './components/pages/Profile';
 import Register from './components/pages/Register';
 import Navbar from './components/shared/Navbar';
 import { CommonGames, Game, Steam } from './context/types';
+import Friends from './components/pages/Friends';
 function App() {
   const [state, dispatch] = useContext(AppContext)
 
@@ -47,6 +48,9 @@ function App() {
         </Route>
         <Route path="/sign-up">
           <Register />
+        </Route>
+        <Route path="/friends">
+          <Friends />
         </Route>
         <Redirect to="/"></Redirect>
       </Switch>

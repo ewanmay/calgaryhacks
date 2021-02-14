@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios';
-import { AuthState, LoginObj, User, Steam, Game, GameSource } from '../client/src/context/types';
+import { AuthState, LoginObj, User, Steam, Game, GameSource, Friend } from '../client/src/context/types';
 
 const app = require('express')()
 const http = require('http').createServer(app)
@@ -136,6 +136,7 @@ io.on('connection', (socket) => {
     const sendResponseToClient = (success) => {
       console.log('success: ', success)
       socket.emit('preferred-players-updated', success)
+      getSteamInfo(username)
     }
     db.updatePreferredPlayers(appid, username, min, max, sendResponseToClient)
   })
@@ -166,7 +167,20 @@ io.on('connection', (socket) => {
 
       const gameList = res.response?.games
 
-      // const idsToGet = []
+      const addPlayerPreferrencesToGame = (row, appid) => {
+        const min = row?.prefferedMinPlayers
+        const max = row?.prefferedMaxPlayers
+        if(min && max){
+          response.games.filter(g => g.appid == appid).map(g => {
+            g.minPlayers = min
+            g.maxPlayers = max
+          })
+        }
+      }
+
+      const getPlayerPrefrence = (appid) => {
+        db.getUserSteamGame(appid, username, addPlayerPreferrencesToGame)
+      }
 
       const appendResultListAndAddSteamGameToDatabase = (result: any, appid) => {
         const game: Game = {
@@ -186,7 +200,7 @@ io.on('connection', (socket) => {
 
 
         db.addSteamGame(appid, game, () => { })
-        db.addUserSteamGame(appid, username)
+        db.addUserSteamGame(appid, username, getPlayerPrefrence)
         response.games.push(game)
       }
       // --------------------------------------------
@@ -201,7 +215,7 @@ io.on('connection', (socket) => {
               source: GameSource.Steam
             }
           )
-          db.addUserSteamGame(appid, username)
+          db.addUserSteamGame(appid, username, getPlayerPrefrence)
         }
         else {
           console.log(appid);
@@ -236,7 +250,9 @@ io.on('connection', (socket) => {
         await steamApi.getUserGameList(row.steam_id, populateGameList);
         await steamApi.getUserInfo(row.steam_id, populateUserData);
 
-        response.games = response.games.filter(g => g.name)
+        response.games = response.games
+          .filter(g => g.name)
+          .sort((a, b) => (a.name.toUpperCase() > b.name.toUpperCase()) ? 1 : -1)
 
         socket.emit('get-steam-info-response', response);
       }
@@ -274,6 +290,14 @@ io.on('connection', (socket) => {
       }
     }
     db.getFriendRequest(id, addFriend)
+  })
+
+  socket.on('get-friends', (username: string) => {
+    const getFriends = (rows) => {
+      const friends: Friend[] = rows.map((friend) => {name: friend.username2})
+    }
+
+    db.getUserFriends(username, getFriends)
   })
 
   socket.on('get-incoming-friend-requests', (username: string) => {

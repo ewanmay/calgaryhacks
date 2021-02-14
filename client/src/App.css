@@ -11,7 +11,6 @@
   background-color: #282c34;
   color: whitesmoke;
   overflow-x: hidden;
-  overflow: hidden;
 }
 
 .flex {
@@ -77,12 +76,14 @@ div .top {
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
 }
 
 #video-chat {
   display: flex;
+  justify-content: space-evenly;
 }
 
 .video {
-  max-width: 25vw;
+  max-width: 15vw;
 }

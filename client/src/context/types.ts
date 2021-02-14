@@ -78,3 +78,6 @@ export interface CommonGames {
   freeGames: Game[]
 }
 
+export interface Friend {
+  username: string
+}

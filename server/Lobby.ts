@@ -119,26 +119,24 @@ class Lobby {
 
   resetListsOfAvailableGames(finishedCallback){
 
-    const userGameList = [];
+    let userGameList = [];
 
     const appendUserSteamGames = (rows) => {
-      console.log("Appending rows: ", rows)
-      userGameList.push(rows.map((row) => this.convertSteamRowToGameObject(row)))
+      userGameList = userGameList.concat(rows.map((row) => this.convertSteamRowToGameObject(row)))
     }
 
     const filterFinalGames = (rows) => {
-      console.log("Appending rows: ", rows)
       // Get all steam games that have the same appid
-      userGameList.push(rows.map((row) => this.convertSteamRowToGameObject(row)))
+      userGameList = userGameList.concat(rows.map((row) => this.convertSteamRowToGameObject(row)))
 
       const filteredSteamGames = [];
       userGameList.forEach((game) => {
-        if(userGameList.filter((filteredGame) => game.appid === filteredGame.appid).length === this.users.length) {
+        if(userGameList.filter((filteredGame) => game.appid === filteredGame.appid).length === this.users.length && !filteredSteamGames.some(filteredGame => filteredGame.appid === game.appid)) {
           filteredSteamGames.push(game)
         }
       })
 
-      this.steamGames = userGameList;
+      this.steamGames = filteredSteamGames;
 
       finishedCallback();
     }
