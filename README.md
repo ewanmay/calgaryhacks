@@ -1,43 +1,46 @@
-# Team Meadow Lake (Group 51) - User Documentation
-## To run the app
-Clone the repo. 
+# Getting Started with Create React App
 
-Running the app requires node and npm to be installed. All other dependencies are managed by npm.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-Open two terminal tabs that will run the server and client respectively.
+## Available Scripts
 
-To build run the server:
-```
-cd server && npm i
-npm start
-```
-The server runs on localhost:5000.
+In the project directory, you can run:
 
-To build and run the client:
-```
-cd client && npm i
-npm start
-```
-The client runs on localhost:3000.
+### `yarn start`
 
-## To play games with your friends
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-Open your browser to the client, `localhost:3000`. 
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
 
-First you will need to log in. You can either create a new account or if you already have one you can sign in.
-## Connecting to your steam account
+### `yarn test`
 
-In the navbar select 'Profile'. From here you can follow the untuitive UI to connect to your steam account. 
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-Been here before? Dont worry! We saved your steam information and are auto refreshing your steam data in the background so you dont have to do a thing!
+### `yarn build`
 
-## Play with Friends
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-To create a lobby simply click the create button under the Groups section in the navbar.a
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-From here you will be able to:
-* Copy an invite code for your friends to join with
-* See a list of games that you and everyone in your lobby are able to play since they are in everyone's library
-* Use the built in chat functionality to message everyone in your lobby
-* Connect to voice and video for real time collaboration with friends in the game without having to use any 3rd party software!
-* Filter the types of games you and your lobby are hoping to play that night
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `yarn eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
