@@ -17,7 +17,7 @@ function Register() {
     state.socket.on("register-response", (res: AuthState) => {
       if (res.loggedIn) {
         dispatch({ type: "LOGIN", payload: res })
-        history.push("/profile");
+        history.push("/");
       }
     })
   }, [])
@@ -29,7 +29,6 @@ function Register() {
 
     if (!usernameError && !passwordError && !emailError) {
       state.socket.emit("register", { username, password, email })
-
     }
     else {
       const allErrors: string[] = [];
@@ -76,6 +75,7 @@ function Register() {
             placeholder="Password"
             aria-label="Password"
             aria-describedby="basic-addon2"
+            type='password'
             onChange={(value: ChangeEvent<any>) => setPassword(value.target.value)}
           />
         </InputGroup>

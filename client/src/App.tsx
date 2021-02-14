@@ -66,7 +66,6 @@ function App() {
         <Route path="/sign-up">
           <Register />
         </Route>
-        <Redirect to="/"></Redirect>
       </Switch>
     </div>
   );

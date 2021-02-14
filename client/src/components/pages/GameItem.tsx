@@ -46,7 +46,7 @@ export default function GameItem({ game, showSetPlayer, setOpenGame, setPlayerMo
             </div>
           )}
 
-          {game.minPlayers > 0 && game.maxPlayers > 0 &&
+          {game.minPlayers && game?.minPlayers > 0 && game.maxPlayers && game.maxPlayers > 0 &&
             (<div className="col-2">
               <div className="">
                 {game.minPlayers}-{game.maxPlayers} players
@@ -83,7 +83,7 @@ export default function GameItem({ game, showSetPlayer, setOpenGame, setPlayerMo
             </div>)
           }
 
-          {game.minPlayers > 0 && game.maxPlayers > 0 &&
+          {game.minPlayers && game.minPlayers > 0 && game.maxPlayers && game.maxPlayers > 0 &&
             (<div className="col-2">
               <div className="">
                 {game.minPlayers}-{game.maxPlayers} players
