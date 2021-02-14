@@ -4,10 +4,11 @@ const LobbyChat = require('./LobbyChat')
 const AccessToken = require('twilio').jwt.AccessToken;
 const VideoGrant = AccessToken.VideoGrant;
 
-
+// we know these shouldn't be here ok
 const twilioAccountSid = 'AC228815c2112277eaadeb9ec8e8fc08e9';
 const twilioApiKey = 'SK9a85493643292f004062227a10df2587';
 const twilioApiSecret = 'ewZugsyLQrcu9jZKDkFzUpDb8kAkfW72';
+
 class Lobby {
   
   io: any // TODO
@@ -18,8 +19,11 @@ class Lobby {
   epicGames: Game[]
   freeGames: Game[]
 
-  lobbyChat: typeof LobbyChat
+  filterFreeGames: boolean
+  filterSteamGames: boolean
+  filterEpicGames: boolean
 
+  lobbyChat: typeof LobbyChat
 
   constructor(io, db, lobbyCode) {
     this.io = io
@@ -29,6 +33,9 @@ class Lobby {
     this.steamGames = []
     this.epicGames = []
     this.freeGames = []
+    this.filterFreeGames = true
+    this.filterSteamGames = true
+    this.filterEpicGames = true
     this.lobbyChat = new LobbyChat(this.users, this.sendMessageToAllUsers.bind(this))
 
     this.io.emit('test', 'hello world')
@@ -71,6 +78,54 @@ class Lobby {
       socket.emit('token', token.toJwt());
     })
 
+    socket.on('filter-free-games', (filterFreeGames: boolean) => {
+      this.filterFreeGames = filterFreeGames
+      this.resetListsOfAvailableGames(() => {
+        this.sendMessageToAllUsers('lobby-updated', this.getLobbyInfo())
+        this.sendMessageToAllUsers('available-games', {freeGames: this.freeGames, steamGames: this.steamGames, epicGames: this.epicGames})
+      })
+      this.sendMessageToAllUsers('filter-free-games-changed', filterFreeGames)
+    })
+    socket.on('filter-steam-games', (filterSteamGames: boolean) => {
+      this.filterSteamGames = filterSteamGames
+      this.resetListsOfAvailableGames(() => {
+        this.sendMessageToAllUsers('lobby-updated', this.getLobbyInfo())
+        this.sendMessageToAllUsers('available-games', {freeGames: this.freeGames, steamGames: this.steamGames, epicGames: this.epicGames})
+      })
+      this.sendMessageToAllUsers('filter-steam-games-changed', filterSteamGames)
+    })
+    socket.on('filter-epic-games', (filterEpicGames: boolean) => {
+      this.filterEpicGames = filterEpicGames
+      this.resetListsOfAvailableGames(() => {
+        this.sendMessageToAllUsers('lobby-updated', this.getLobbyInfo())
+        this.sendMessageToAllUsers('available-games', {freeGames: this.freeGames, steamGames: this.steamGames, epicGames: this.epicGames})
+      })
+      this.sendMessageToAllUsers('filter-epic-games-changed', filterEpicGames)
+    })
+
+    socket.on('vote-for-free-game', (username: string, appid: string) => {
+      const game = this.freeGames.find((game) => game.appid == appid)
+      if(game){
+        game.votes = game.votes? game.votes + 1 : 1;
+      }
+      console.log("Game: ", game)
+      this.sendMessageToAllUsers('available-games', {freeGames: this.freeGames, steamGames: this.steamGames, epicGames: this.epicGames})
+    })
+    socket.on('vote-for-steam-game', (username: string, appid: string) => {
+      const game = this.steamGames.find((game) => game.appid == appid)
+      if(game) {
+        game.votes = game.votes? game.votes + 1 : 1;
+      }
+      this.sendMessageToAllUsers('available-games', {freeGames: this.freeGames, steamGames: this.steamGames, epicGames: this.epicGames})
+    })
+    socket.on('vote-for-epic-game', (username: string, appid: string) => {
+      const game = this.epicGames.find((game) => game.appid == appid)
+      if(game) {
+        game.votes = game.votes? game.votes + 1 : 1;
+      }
+      this.sendMessageToAllUsers('available-games', {freeGames: this.freeGames, steamGames: this.steamGames, epicGames: this.epicGames})
+    })
+
   }
 
   removeUserFromLobby(username: string): boolean {
@@ -97,7 +152,8 @@ class Lobby {
       appid: row.id,
       minPlayers: row.minPlayers,
       maxPlayers: row.maxPlayers,
-      source: GameSource.Free
+      source: GameSource.Free,
+      votes: 0
     }
 
     return game
@@ -111,7 +167,8 @@ class Lobby {
       appid: row.appid,
       minPlayers: row.minPlayers,
       maxPlayers: row.maxPlayers,
-      source: GameSource.Steam
+      source: GameSource.Steam,
+      votes: 0
     }
 
     return game
@@ -122,12 +179,22 @@ class Lobby {
     let userGameList = [];
 
     const appendUserSteamGames = (rows) => {
-      userGameList = userGameList.concat(rows.map((row) => this.convertSteamRowToGameObject(row)))
+      if(this.filterSteamGames){
+        userGameList = userGameList.concat(rows.map((row) => this.convertSteamRowToGameObject(row)))
+      }
+      else {
+        this.steamGames = []
+      }
     }
 
     const filterFinalGames = (rows) => {
       // Get all steam games that have the same appid
-      userGameList = userGameList.concat(rows.map((row) => this.convertSteamRowToGameObject(row)))
+      if(this.filterSteamGames){
+        userGameList = userGameList.concat(rows.map((row) => this.convertSteamRowToGameObject(row)))
+      }
+      else {
+        this.steamGames = []
+      }
 
       const filteredSteamGames = [];
       userGameList.forEach((game) => {
@@ -142,9 +209,13 @@ class Lobby {
     }
 
     const populateFreeGamesAndPopulateSteamGames = (rows) => {
-      this.freeGames = rows.map((row) => this.convertRowToGameObject(row))
-      // Do some wild filtering shit
-
+      if(this.filterFreeGames){
+        this.freeGames = rows.map((row) => this.convertRowToGameObject(row))
+      }
+      else {
+        this.freeGames = []
+      }
+      
       const addUserInfo = (username, rows) =>{
         userGameList.push(rows.map((row) => this.convertRowToGameObject(row)))
       }

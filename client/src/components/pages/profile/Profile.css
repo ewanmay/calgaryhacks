@@ -1,7 +1,7 @@
 .game-container {
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: 90vh;
+  max-height: 40vh;
   min-height: 80%;
 }
 

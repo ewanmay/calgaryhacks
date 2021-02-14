@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
-import { AppContext } from '../../context/context';
-import { Game } from '../../context/types';
+import { AppContext } from '../../../context/context';
+import { Game } from '../../../context/types';
 
 interface ConnectSteamModalProps {
   close: any,

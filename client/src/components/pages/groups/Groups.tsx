@@ -3,11 +3,11 @@ import { faClipboard } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, FormControl, InputGroup } from 'react-bootstrap';
 import 'react-chat-widget/lib/styles.css';
-import { AppContext } from '../../context/context';
-import Chat from '../Chat';
-import Userlist from '../UserList';
-import VideoChat from '../VideoChat';
-import CommonGames from './CommonGames';
+import { AppContext } from '../../../context/context';
+import Chat from '../../Chat';
+import Userlist from '../../UserList';
+import VideoChat from '../../VideoChat';
+import CommonGames from '../CommonGames';
 import './Groups.css';
 
 function Groups() {
@@ -17,10 +17,7 @@ function Groups() {
   const inputRef = useRef({}) as RefObject<HTMLInputElement>
 
   useEffect(() => {
-    return () => {
-      console.log('leaving')
-      leaveLobby()
-    }
+    return () =>  leaveLobby() // leave lobby on unmount    
   }, [])
 
   const createLobby = () => {

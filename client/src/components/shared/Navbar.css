@@ -1,9 +1,11 @@
 .navbar {
   color: white;
-  background-color: rgb(53, 145, 125)
+  background-color: rgb(53, 145, 125);
+  margin-bottom: 20px;
 }
 .navbar div a {
   color: white;
+  margin-right: 30px;
 }
 
 .navlink{

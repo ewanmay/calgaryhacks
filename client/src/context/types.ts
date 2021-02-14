@@ -44,7 +44,10 @@ export interface MessageLog {
 
 export interface UserProfile {
   name: string,
-  steam: Steam
+  steam: Steam,
+  friends: Friend[],
+  outgoingRequests: FriendRequest[],
+  incomingRequests: FriendRequest[]
 }
 
 export interface Steam {
@@ -69,7 +72,8 @@ export interface Game {
   appid: string
   source: GameSource
   minPlayers?: number,
-  maxPlayers?: number
+  maxPlayers?: number,
+  votes?: number
 }
 
 export interface CommonGames {
@@ -80,4 +84,10 @@ export interface CommonGames {
 
 export interface Friend {
   username: string
+}
+
+export interface FriendRequest {
+  id: number,
+  sending: string, 
+  receiving: string
 }

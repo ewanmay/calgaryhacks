@@ -14,14 +14,20 @@ const VideoChat = ({ roomName }: Props) => {
   const [token, setToken] = useState('')
   
   useEffect(() => {
-    const participantConnected = (participant: any) => {
-      setParticipants((prevParticipants: any) => [...prevParticipants, participant]);
-    };
-    const participantDisconnected = (participant: any) => {
-      setParticipants((prevParticipants: any) =>
-        prevParticipants.filter((p: any) => p !== participant)
-      );
-    };
+    return () => leaveVideo() // leave video on unmount // TODO not working   
+  }, [])
+  
+  const participantConnected = (participant: any) => {
+    setParticipants((prevParticipants: any) => [...prevParticipants, participant]);
+  };
+
+  const participantDisconnected = (participant: any) => {
+    setParticipants((prevParticipants: any) =>
+      prevParticipants.filter((p: any) => p !== participant)
+    );
+  };
+
+  useEffect(() => {
 
     if (token) {
       Video.connect((token), {
@@ -34,8 +40,8 @@ const VideoChat = ({ roomName }: Props) => {
       });
     }
       
-      return () => {
-        setRoom((currentRoom: any) => {
+    return () => {
+      setRoom((currentRoom: any) => {
         if (currentRoom && currentRoom.localParticipant.state === 'connected') {
           currentRoom.localParticipant.tracks.forEach(function (trackPublication: any) {
             trackPublication.track.stop();
@@ -50,7 +56,12 @@ const VideoChat = ({ roomName }: Props) => {
   }, [roomName, token]);
 
   const leaveVideo = () => {
-    setToken("");
+    console.log('leaving video')
+    setToken('');
+    if (room) {
+      room.disconnect()
+    }
+    setParticipants([])
   };
 
 
@@ -80,8 +91,10 @@ const VideoChat = ({ roomName }: Props) => {
           )}          
           {remoteParticipants}
         </div>
-        <div>
-          <Button onClick={leaveVideo}>Leave Video</Button>
+        <div className="col-12 flex fill" style={{justifyContent: 'flex-end'}}>
+          <div className="col-1" style={{marginRight: 20}}>
+            <Button onClick={leaveVideo}>Leave Video</Button>
+          </div>
         </div>
       </div>
     );

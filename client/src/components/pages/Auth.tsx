@@ -38,7 +38,7 @@ function Auth() {
 
 
   return (
-    <div className="col-12 p-0 fill flex center" onKeyPress ={(e) => { if (e.key === "Enter") { logIn() } }}>
+    <div className="auth-page col-12 p-0 fill flex center" onKeyPress ={(e) => { if (e.key === "Enter") { logIn() } }}>
       <div className="col-4 p-0 flex center">
         <h3>Welcome to Games Night</h3>
         <div className="error-message col-12">
@@ -70,7 +70,7 @@ function Auth() {
 
         <Button onClick={() => logIn()}>Log in</Button>
         <div className="col-12" style={{margin: 10}}>
-          New here? <Link to="/sign-up"> Sign up</Link>
+          New here? <Link style={{color: "white"}} to="/sign-up"> Sign up</Link>
         </div>
       </div>
     </div>

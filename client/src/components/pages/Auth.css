@@ -2,3 +2,10 @@
   color: red;
   font-weight: 500;
 }
+
+.auth-page {
+  background-image: url("../../images/catan.jpg");
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
+}

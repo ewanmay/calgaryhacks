@@ -18,7 +18,10 @@ export const profile = {
     avatarUrl: "",
     games: [],
     steamError: ""
-  }
+  },
+  friends: [],
+  incomingRequests: [],
+  outgoingRequests: []
 }
 
 export const commonGames = {  

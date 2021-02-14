@@ -5,9 +5,7 @@
   min-height: 100vh;
   background-color: white;
   transition: transform 200ms ease 0s;
-  user-select: none; 
   overflow-y: auto;
-  user-select: text !important;
   background-color: #282c34;
   color: whitesmoke;
   overflow-x: hidden;

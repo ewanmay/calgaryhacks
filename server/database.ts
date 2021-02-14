@@ -143,12 +143,12 @@ class Database {
   getUserFriends(username, callback){
     const sql = 'SELECT * FROM friend WHERE username1 = ?'
     const params = [username]
-    this.db.get(sql, params, function (err, row) {
+    this.db.all(sql, params, function (err, rows) {
       if (err) {
         console.log('ERROR ', err.message)
         return callback(err.message)
       }
-      return callback(row)
+      return callback(rows)
     })
   }
 
@@ -194,7 +194,7 @@ class Database {
   }
 
   getIncommingRequests(username: string, callback){
-    const sql = 'SELECT * FROM friend_request WHERE sending = ?'
+    const sql = 'SELECT * FROM friend_request WHERE receiving = ?'
     const params = [username]
     this.db.all(sql, params, function (err, rows) {
       if (err) {
@@ -206,7 +206,7 @@ class Database {
   }
 
   getOutgoingRequests(username: string, callback){
-    const sql = 'SELECT * FROM friend_request WHERE receiving = ?'
+    const sql = 'SELECT * FROM friend_request WHERE sending = ?'
     const params = [username]
     this.db.all(sql, params, function (err, rows) {
       if (err) {
@@ -357,6 +357,7 @@ class Database {
         this.db.run(insert, ['ChessX', 'http://www.chessx.ca/', '2','8'], () => {})
         this.db.run(insert, ['CodeNames', 'https://codenames.game/', '4','12'], () => {})
         this.db.run(insert, ['Minecraft', 'https://www.minecraft.net/', '1','100'], () => {})
+        this.db.run(insert, ['Settlers of Catan', 'https://colonist.io/', '2','6'], () => {})
       }
     )
   }

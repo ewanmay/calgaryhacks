@@ -4,24 +4,41 @@ import './App.css';
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
 import Auth from './components/pages/Auth';
 import Landing from './components/pages/Landing';
-import Groups from './components/pages/Groups';
-import Profile from './components/pages/Profile';
+import Groups from './components/pages/groups/Groups';
+import Profile from './components/pages/profile/Profile';
 import Register from './components/pages/Register';
 import Navbar from './components/shared/Navbar';
-import { CommonGames, Game, Steam } from './context/types';
-import Friends from './components/pages/Friends';
+import { CommonGames, Friend, FriendRequest, Game, Steam } from './context/types';
+import useSound from 'use-sound'
+
+//@ts-ignore
+import clickSfx from './sounds/appbutton_click.mp3'
+
 function App() {
   const [state, dispatch] = useContext(AppContext)
-
   useEffect(() => {
     state.socket.on('available-games', (games: CommonGames) => dispatch({ type: "SET_COMMON_GAMES", payload: games }))
     state.socket.on('game-selected', (msg: Game) => dispatch({ type: "SELECT_GAME", payload: msg }))
+    state.socket.on('get-friends-response', (friends: Friend[]) => dispatch({ type: "SET_FRIENDS", payload: friends }))    
+    state.socket.on('get-outgoing-friend-requests-response', (friendRequests: FriendRequest[]) => dispatch({ type: "SET_OUTGOING_FRIEND_REQUESTS", payload: friendRequests }))    
+    state.socket.on('get-incoming-friend-requests-response', (friendRequests: FriendRequest[]) => dispatch({ type: "SET_INCOMING_FRIEND_REQUESTS", payload: friendRequests }))        
+    state.socket.on('accept-friend-request-response', (friendRequests: FriendRequest[]) => dispatch({ type: "SET_INCOMING_FRIEND_REQUESTS", payload: friendRequests }))
     state.socket.on("get-steam-info-response", (data: Steam) => {
       dispatch({ type: "GET_STEAM_INFO", payload: data })
     })
   }, [dispatch, state.authState, state.socket])
 
   const history = useHistory()
+
+  console.log(clickSfx)
+  const [playClickSound] = useSound(clickSfx, { volume: 1 })
+
+  useEffect(()=>{
+    document.body.addEventListener("click", function (evt) {
+      console.log("body clicked");
+      playClickSound() 
+    }, true);
+  },[])
 
   const handleNoAuth = () => {
     if (!state.authState.loggedIn) {
@@ -48,9 +65,6 @@ function App() {
         </Route>
         <Route path="/sign-up">
           <Register />
-        </Route>
-        <Route path="/friends">
-          <Friends />
         </Route>
         <Redirect to="/"></Redirect>
       </Switch>

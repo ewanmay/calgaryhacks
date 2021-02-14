@@ -13,11 +13,14 @@ const PORT = process.env.PORT || 5000
 const LobbyList = require('./LobbyList')
 const Database = require('./database')
 const SteamApi = require('./SteamApi')
+const Email = require('./email')
 
 const db = new Database()
 const lobbyList = new LobbyList(io, db)
 const userSocketList: User[] = []
 const steamApi = new SteamApi('392CEE1C5F48960F3C60A8174B2FBE7E')
+const email = new Email('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')
+// email.sendEmailTest()
 
 const removeUserFromLobbies = (socket) => {
   const index = userSocketList.findIndex(
@@ -56,6 +59,7 @@ io.on('connection', (socket) => {
           loggedIn = true
         email = user.email
         console.log(username, 'logged in')
+        getFriends(username)
       }
       const response: AuthState = {
         id,
@@ -279,8 +283,9 @@ io.on('connection', (socket) => {
 
   socket.on('accept-friend-request', (id: number) => {
     const addFriend = (row) => {
-      const to = row.to
-      const from = row.from
+      console.log(row)
+      const to = row.sending
+      const from = row.receiving
       if(to && from){
         db.addFriend(to, from, ()=>{})
         db.addFriend(from, to, ()=>{})
@@ -292,16 +297,18 @@ io.on('connection', (socket) => {
     db.getFriendRequest(id, addFriend)
   })
 
-  socket.on('get-friends', (username: string) => {
-    const getFriends = (rows) => {
+  const getFriends = (username: string) => {
+    const sendResponseToClient = (rows) => {
       const friends: Friend[] = rows.map((friend) => {name: friend.username2})
+      socket.emit('get-friends-response', friends)
     }
 
-    db.getUserFriends(username, getFriends)
-  })
+    db.getUserFriends(username, sendResponseToClient)
+  }
+  socket.on('get-friends', (username: string) => getFriends(username))
 
   socket.on('get-incoming-friend-requests', (username: string) => {
-    console.log('get-incoming-friend-requests', username)
+    console.log('get-incoming-friend-requests', username) 
     const sendResponseToClient = (rows) => {
       console.log('added request: ', rows)
       socket.emit('get-incoming-friend-requests-response', rows)

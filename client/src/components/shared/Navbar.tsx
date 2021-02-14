@@ -40,7 +40,7 @@ export default function Navbar() {
             </Link>
           </div>
 
-          <div className="p-1" style={{marginRight: 190}}>
+          <div className="p-1" style={{marginRight: 280}}>
             Games Night
           </div>
 

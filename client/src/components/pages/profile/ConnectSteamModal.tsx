@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
-import { AppContext } from '../../context/context';
+import { AppContext } from '../../../context/context';
 
 interface ConnectSteamModalProps {
   close: any
@@ -29,9 +29,9 @@ function ConnectSteamModal({ close }: ConnectSteamModalProps) {
           {state.profile.steam.steamError}
         </div>
         <div>
-          You can find your steam ID
-          <a href="https://store.steampowered.com/account/">
-            here
+          You can find your Steam ID
+          <a href="https://store.steampowered.com/account/" target='_blank' rel="noreferrer">
+            {' '}here
           </a>
         </div>
         <InputGroup className="mb-3">
