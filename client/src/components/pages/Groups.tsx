@@ -1,14 +1,14 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
-import { AppContext } from '../../context/context';
-import { Widget, addResponseMessage, deleteMessages, renderCustomComponent } from 'react-chat-widget';
-import 'react-chat-widget/lib/styles.css';
-import { ServerMessage } from '../../context/types';
-import Userlist from '../UserList'
-import Chat from '../Chat';
-
+import { faClipboard } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { ChangeEvent, useContext, useState } from 'react';
 import { Button, FormControl, InputGroup } from 'react-bootstrap';
-
-import './Groups.css'
+import 'react-chat-widget/lib/styles.css';
+import { AppContext } from '../../context/context';
+import Chat from '../Chat';
+import Userlist from '../UserList';
+import VideoChat from '../VideoChat';
+import CommonGames from './CommonGames';
+import './Groups.css';
 
 function Groups() {
   const [state, dispatch] = useContext(AppContext)
@@ -25,6 +25,7 @@ function Groups() {
       setLobbyCode(res.lobbyCode)
     })
     state.socket.emit('create-lobby', state.authState.username);
+    state.socket.emit('get-games')
   }
 
   const joinLobby = () => {
@@ -35,6 +36,7 @@ function Groups() {
       setInLobby(true)
     })
     state.socket.emit('join-lobby', { username: state.authState.username, lobbyCode })
+    state.socket.emit('get-games')
   }
 
   const leaveLobby = () => {
@@ -77,16 +79,22 @@ function Groups() {
             <div id="groups-main">
               <div id="groups-left">
                 <div className="p-3">
-                  <Button onClick={() => leaveLobby()}>Leave Lobby</Button>
-                  <b className="pl-3">Code:</b> {lobbyCode}
+                  <div className='flex row' style={{alignItems: 'center'}}>
+                    <Button onClick={() => leaveLobby()}>Leave Lobby</Button>
+                    <b className="pl-3" id='code' style={{fontFamily: 'monospace', fontSize: 17}}>Code: {lobbyCode}</b>
+                    <div className='pointer' onClick={() => {navigator.clipboard.writeText(lobbyCode)}}>
+                      <FontAwesomeIcon icon={faClipboard} style={{marginLeft: 5}}></FontAwesomeIcon>
+                    </div>
+                  </div>
                 </div>
-                <Userlist />
-                {/* List of users in lobby? */}
+                <Userlist />                
+                <VideoChat roomName={lobbyCode}/>
               </div>
               <div id="groups-middle">
-                {/* Available game options + randomly selected game to play */}
+                <CommonGames></CommonGames>
               </div>
               <div id="groups-right">
+                <h5>Chat</h5>
                 <Chat />
               </div>
             </div>

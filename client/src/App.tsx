@@ -13,8 +13,6 @@ function App() {
   const [state, dispatch] = useContext(AppContext)
 
   useEffect(() => {
-    setInterval(() => state.socket.emit("hello"), 2000);
-    state.socket.on('hello-response', () => console.log("server said hello"));
     state.socket.on('available-games', (games: CommonGames) => dispatch({ type: "SET_COMMON_GAMES", payload: games }))
     state.socket.on('game-selected', (msg: Game) => dispatch({ type: "SELECT_GAME", payload: msg }))
     state.socket.on("get-steam-info-response", (data: Steam) => {
@@ -34,8 +32,10 @@ function App() {
   return (
     <div className="App flex column nowrap">
       {state.authState.loggedIn && <Navbar></Navbar>}
-      {handleNoAuth()}
       <Switch>
+        <Route path="/" exact >
+          {handleNoAuth()}
+        </Route>
         <Route path="/home">
           <Landing />
         </Route>

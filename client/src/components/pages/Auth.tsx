@@ -39,7 +39,7 @@ function Auth() {
 
   return (
     <div className="col-12 p-0 flex center" onKeyPress ={(e) => { if (e.key === "Enter") { logIn() } }}>
-      <div className="col-3 p-0 flex center">
+      <div className="col-4 p-0 flex center">
         <h3>Welcome to Games Night</h3>
         <div className="error-message col-12">
           {state.authState.errorMessage}
@@ -63,6 +63,7 @@ function Auth() {
             placeholder="Password"
             aria-label="Password"
             aria-describedby="basic-addon2"
+            type='password'
             onChange={(value: ChangeEvent<any>) => setPassword(value.target.value)}
           />
         </InputGroup>

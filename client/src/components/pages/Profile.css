@@ -1,6 +1,8 @@
 .game-container {
   overflow-y: auto;
-  height: 80vh;
+  overflow-x: hidden;
+  max-height:90%;
+  min-height:80%;
 }
 
 .modal-background {
@@ -12,16 +14,15 @@
 }
 
 .modal {
-  position: absolute;
-  background-color: white;
-  border: 10px solid lightblue;
-  width: 35vw;
-  height: 20%;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
+  background-color: rgb(82, 131, 148);;
+  border: 10px grey;
   border-radius: 5px;
   font-size: 25px;
+}
+
+.modal-body {
+  font-size: 15px;
 }
 
 .game-list-item > a {

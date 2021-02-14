@@ -2,24 +2,17 @@ import React, { useEffect, useState, useContext } from 'react'
 import { AppContext } from '../context/context'
 import { ClientMessage, ServerMessage } from '../context/types'
 import './Chat.css'
+const EMOJIS = require('smile2emoji').emojiMap;
 
 const TIMESTAMP_OPTIONS = { hour: '2-digit', minute: '2-digit', hour12: false }
 
-const EMOJIS = {
-  ':)': '🙂 ',
-  ';)': '😉 ',
-  ':(': '🙁 ',
-  ':o': '😲 ',
-}
 
 function emojify(text: string) {
   for (const [trigger, emoji] of Object.entries(EMOJIS)) {
-    text = text.replace(trigger, emoji)
+    text = text.replace(trigger as string, emoji as string)
   }
   return text
 }
-
-
 interface MessageProps {
   m: ServerMessage
 }

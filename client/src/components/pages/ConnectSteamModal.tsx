@@ -12,19 +12,27 @@ function ConnectSteamModal({ close }: ConnectSteamModalProps) {
   const [steamId, setSteamId] = useState("")
   const connectSteamId = () => {
     state.socket.emit("add-steamid", state.authState.username, steamId)
+    state.socket.on("steamid-added", (succeeded: boolean) => {
+      close()
+    })
   }
 
   useEffect(() => {
   }, [])
   return (
-    <div className="modal-background">
-      <div className="modal flex center">
+    <div className="modal-background flex center">
+      <div className="modal flex center column">
         <div className="modal-header">
           Connect Steam ID
-      </div>
+        </div>
         <div className="error-message">
           {state.profile.steam.steamError}
-
+        </div>
+        <div>
+          You can find your steam ID
+          <a href="https://store.steampowered.com/account/">
+            here
+          </a>
         </div>
         <InputGroup className="mb-3">
           <FormControl

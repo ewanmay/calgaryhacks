@@ -52,14 +52,22 @@ export interface Steam {
   steamError: string,
   profileUrl: string,
   avatarUrl: string,
+  steamId: string,
   games: Game[]
+}
+
+export enum GameSource {
+  Steam = "steam",
+  Free = "free",
+  Epic = "epic"
 }
 
 export interface Game {
   name: string,
   multiplayer: boolean,
   website: string,
-  appid: string,
+  appid: string
+  source: GameSource
   minPlayers?: number,
   maxPlayers?: number
 }

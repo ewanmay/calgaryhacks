@@ -10,6 +10,7 @@
   user-select: text !important;
   background-color: #282c34;
   color: whitesmoke;
+  overflow-x: hidden;
 }
 
 .flex {
@@ -65,4 +66,8 @@ div .top {
 
 .nowrap {
     flex-wrap: nowrap;
+}
+
+.ic {
+  margin-right: 5px;
 }

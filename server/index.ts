@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios';
-import { AuthState, LoginObj, User, Steam, Game } from '../client/src/context/types';
+import { AuthState, LoginObj, User, Steam, Game, GameSource } from '../client/src/context/types';
 
 const app = require('express')()
 const http = require('http').createServer(app)
@@ -17,7 +17,7 @@ const SteamApi = require('./SteamApi')
 const db = new Database()
 const lobbyList = new LobbyList(io, db)
 const userSocketList: User[] = []
-const steamApi = new SteamApi('A17C8B0E4812324814A2DCAB9579B3AF')
+const steamApi = new SteamApi('392CEE1C5F48960F3C60A8174B2FBE7E')
 
 const removeUserFromLobbies = (socket) => {
   const index = userSocketList.findIndex(
@@ -130,11 +130,32 @@ io.on('connection', (socket) => {
     lobbyList.removeUserFromLobbies(username)
   })
 
+
+  socket.on('update-preferred-players', (username: string, appid:string, min:number, max:number) => {
+    console.log('adding steam id: ', username, appid)
+    const sendResponseToClient = (success) => {
+      console.log('success: ', success)
+      socket.emit('preferred-players-updated', success)
+    }
+    db.updatePreferredPlayers(appid, username, min, max, sendResponseToClient)
+  })
+  
+  socket.on('get-free-games', () => {
+    console.log('getting free games ')
+    const sendResponseToClient = (rows) => {
+      console.log('rows: ', rows)
+      socket.emit('get-steam-info-response', rows)
+    }
+    db.getAllFreeGames(sendResponseToClient)
+
+  })
+
   const getSteamInfo = (username: string) => {
     console.log('get-steam-info', username)
 
     const response: Steam = {
       steamUsername: '',
+      steamId: '',
       steamError: '',
       profileUrl: '',
       avatarUrl: '',
@@ -147,12 +168,13 @@ io.on('connection', (socket) => {
 
       // const idsToGet = []
 
-      const apiCallback = (result: any, appid) => {
-        const game: Game = { 
+      const appendResultListAndAddSteamGameToDatabase = (result: any, appid) => {
+        const game: Game = {
           name: '',
           multiplayer: false,
           website: '',
-          appid:appid
+          source: GameSource.Steam,
+          appid: appid
         }
         const appResponse = result[appid];
         if (appResponse.success) {
@@ -162,29 +184,33 @@ io.on('connection', (socket) => {
           game.multiplayer = appData.categories?.some(c => c.id == 1);
         }
 
-        db.addSteamGame(appid, game, username, () => { })
+
+        db.addSteamGame(appid, game, () => { })
+        db.addUserSteamGame(appid, username)
         response.games.push(game)
       }
-
-      const dbCallback = (result: any, id: string) => {
+      // --------------------------------------------
+      const appendResultListAndGetSteamGame = (result: any, appid: string) => {
         if (result && result?.appid) {
           response.games.push(
             {
               name: result.name,
               website: result.website,
               multiplayer: result.multiplayer,
-              appid:id
+              appid: appid,
+              source: GameSource.Steam
             }
           )
+          db.addUserSteamGame(appid, username)
         }
         else {
-          console.log(id);
-          steamApi.getGameInfo(id,apiCallback)
+          console.log(appid);
+          steamApi.getGameInfo(appid, appendResultListAndAddSteamGameToDatabase)
         }
       }
 
-      if(gameList){
-        gameList?.map((game) => db.getSteamGame(game.appid, dbCallback))
+      if (gameList) {
+        gameList?.map((game) => db.getSteamGame(game.appid, appendResultListAndGetSteamGame))
       }
       else {
         response.steamError += 'Unable to find games. ';
@@ -197,11 +223,11 @@ io.on('connection', (socket) => {
         response.steamUsername = player.personaname || '';
         response.avatarUrl = player.avatar || '';
         response.profileUrl = player.profileurl || '';
+        response.steamId = player.steamid || '';
       }
       else {
         response.steamError += 'Unable to find user data. ';
       }
-
     }
 
     const sendApiRequests = async (row) => {
@@ -211,6 +237,7 @@ io.on('connection', (socket) => {
         await steamApi.getUserInfo(row.steam_id, populateUserData);
 
         response.games = response.games.filter(g => g.name)
+
         socket.emit('get-steam-info-response', response);
       }
       else {
@@ -224,6 +251,23 @@ io.on('connection', (socket) => {
 
 
   socket.on('get-steam-info', (username: string) => getSteamInfo(username))
+
+  socket.on('send-friend-request', (from: string, to: string) => {
+    // TODO anything?
+  })
+
+  socket.on('accept-friend-request', (id: number) => {
+    // TODO anything?
+  })
+
+  socket.on('get-incoming-friend-requests', (from: string, to: string) => {
+    // TODO anything?
+  })
+
+  socket.on('get-outgoing-friend-requests', (from: string, to: string) => {
+    // TODO anything?
+  })
+
 
   socket.on('disconnect', () => {
     // TODO anything?

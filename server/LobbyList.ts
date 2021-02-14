@@ -47,6 +47,8 @@ class LobbyList {
     const lobby = new Lobby(this.io, this.db, lobbyCode)
     this.lobbies.push(lobby)
     // TODO join lobby
+    // TODO join lobby
+    // TODO join lobby
     return lobbyCode
   }
 
@@ -56,7 +58,7 @@ class LobbyList {
    * Returns:
    * - lobby: if exists, returns the lobby object. else, returns undefined
    */
-  addUserToLobby(lobbyCode, username, socket) {
+  addUserToLobby(lobbyCode: string, username: string, socket) {
     const lobby = this.lobbies.find((value) => value.lobbyCode === lobbyCode)
     if (!lobby) {
       socket.emit('join-lobby-err', 'Lobby Not Found!')

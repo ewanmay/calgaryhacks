@@ -13,7 +13,8 @@ export const profile = {
   name: "",
   steam: {
     steamUsername: "",
-    profileUrl: "",
+    profileUrl: "",    
+    steamId: "",
     avatarUrl: "",
     games: [],
     steamError: ""
