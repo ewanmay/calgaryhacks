@@ -1,6 +1,9 @@
 .navbar {
-  border-bottom: 2px solid coral;
-  color: black
+  color: white;
+  background-color: rgb(0, 67, 105)
+}
+.navbar div a {
+  color: white;
 }
 
 .navlink{

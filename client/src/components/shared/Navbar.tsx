@@ -18,7 +18,7 @@ export default function Navbar() {
   }
 
   return (
-    <BootstrapNavbar bg="light" variant="light" expand="lg" className="navbar fit">
+    <BootstrapNavbar expand="lg" className="navbar fit">
       <BootstrapNavbar.Toggle aria-controls="basic-navbar-nav" />
       <BootstrapNavbar.Collapse id="basic-navbar-nav">
         <div className="col-12 p-0 flex space-between">

@@ -22,12 +22,12 @@ function Profile() {
       {steam.games.length > 0 && (
         <div className="col-12 p-0 flex center left column">
           <h4>
-            Your Games
+            Your Multiplayer Games
           </h4>
           <div className="col-6 p-0 game-container left">
             {state.profile.steam.games.map((game: Game) => {
               return (
-                <div className="col-12 p-0 game-list-item">
+                <div className="col-12 px-0 game-list-item">
                   <a href={game.website} target="_blank" rel="noreferrer">
                     {game.name}
                   </a>

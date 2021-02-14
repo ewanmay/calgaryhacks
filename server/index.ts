@@ -187,34 +187,6 @@ io.on('connection', (socket) => {
       else {
         response.steamError += 'Unable to find games. ';
       }
-
-      // if (idsToGet && idsToGet.length > 0) {
-      //   // const allGameResponses = await Promise.all(idsToGet.map(id => steamApi.getGameInfo(id).catch(err => console.log(err))));
-      //   const allGameResponses = await Promise.all([steamApi.getGameInfo(idsToGet[0]).catch(err => console.log(err))]);
-
-      //   response.games = allGameResponses.filter(item => item).map((response: AxiosResponse, index: number) => {
-      //     const game: Game = {
-      //       name: '',
-      //       multiplayer: false,
-      //       website: ''
-      //     }
-      //     const appResponse = response.data[idsToGet[index]];
-      //     if (appResponse.success) {
-      //       const appData = appResponse.data;
-      //       game.name = appData.name || '';
-      //       game.website = appData.website || '';
-      //       game.multiplayer = appData.categories?.some(c => c.id == 1);
-      //     }
-
-      //     db.addSteamGame(idsToGet[index], game, () => { })
-      //     return game
-
-      //   })
-
-      // }
-      // else {
-      //   response.steamError += 'Unable to find games. ';
-      // }
     }
 
     const populateUserData = (res) => {
@@ -236,6 +208,7 @@ io.on('connection', (socket) => {
         await steamApi.getUserGameList(row.steam_id, populateGameList);
         await steamApi.getUserInfo(row.steam_id, populateUserData);
 
+        response.games = response.games.filter(g => g.name)
         socket.emit('get-steam-info-response', response);
       }
       else {

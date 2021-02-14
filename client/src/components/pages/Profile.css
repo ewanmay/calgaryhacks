@@ -1,6 +1,6 @@
 .game-container {
   overflow-y: auto;
-  max-height: 400px;
+  height: 80vh;
 }
 
 .modal-background {
@@ -22,4 +22,24 @@
   transform: translate(-50%, -50%);
   border-radius: 5px;
   font-size: 25px;
+}
+
+.game-list-item > a {
+  background-color: transparent;
+  color: white
+}
+
+.game-list-item {
+  padding: 10px;
+  color: white;
+}
+.game-list-item:hover, .game-list-item:hover>a {
+  background-color: rgb(82, 131, 148);
+  color: white;
+  text-decoration: none;
+}
+
+.game-list-item > a:hover {
+  color: white;
+  text-decoration: none;
 }

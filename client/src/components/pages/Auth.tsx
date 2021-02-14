@@ -68,7 +68,7 @@ function Auth() {
         </InputGroup>
 
         <Button onClick={() => logIn()}>Log in</Button>
-        <div className="col-12">
+        <div className="col-12" style={{margin: 10}}>
           New here? <Link to="/sign-up"> Sign up</Link>
         </div>
       </div>

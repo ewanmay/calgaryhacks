@@ -15,50 +15,6 @@ function Groups() {
   const [lobbyCode, setLobbyCode] = useState('')
   const [inLobby, setInLobby] = useState(false)
 
-  // const handleGotMessage = (msg: ServerMessage) => {
-  //     // console.log('MY USERNAME: ' + state.authState.username)
-  //     console.log('got chat msg', msg)
-  //     // if(state.authState.username !== msg.username){
-  //       addResponseMessage(extractMsg(msg))//, msg.username)
-        
-  //       //@ts-ignore
-  //       // renderCustomComponent(CustomMessageComponent(msg), {}, false)
-  //     // }
-  //   }
-  
-  useEffect(() => {
-    state.socket.off('chat-message');
-    state.socket.on('chat-message', (msg: ServerMessage) => {
-      console.log('got chat msg', msg)
-      addResponseMessage(extractMsg(msg))//, msg.username)
-      //@ts-ignore
-      renderCustomComponent(CustomMessageComponent(msg), {}, false)
-    })
-    return () => deleteMessages(99999999)
-  }, [state.socket])
-  
-  const extractMsg = (msg: ServerMessage): string => {
-    return msg.messageContents
-  }
-
-  const handleNewUserMessage = (newMessage: string) => {
-    console.log(`New message sending out: ${newMessage}`);
-    state.socket.emit('add-chat-message', {messageContents: newMessage, username: state.authState.username})
-  }
-
-  const CustomMessageComponent = (msg: ServerMessage) => {
-    return (
-      <div>
-        msg.username
-        <br />
-      <div>
-          msg.messageContents
-        </div>
-      </div>
-    )
-  }
-
-
   const createLobby = () => {
     // Ask server to create lobby
 
@@ -88,7 +44,7 @@ function Groups() {
     setInLobby(false)
     setLobbyCode('')
   }
-  
+
   return (
     <div className="fill flex center nowrap">
 
@@ -133,13 +89,6 @@ function Groups() {
               <Chat />
             </div>
           </div>
-          {/* <Widget 
-            handleNewUserMessage={(message: string) => {}}
-            handleSubmit={handleNewUserMessage}
-            showTimeStamp = {true}
-            title="Group Chat"
-            subtitle = {"Lobby: " + lobbyCode}
-          /> */}
           </div>
         </>
       )}
