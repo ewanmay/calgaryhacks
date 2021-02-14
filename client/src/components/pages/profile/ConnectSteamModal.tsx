@@ -28,16 +28,17 @@ function ConnectSteamModal({ close }: ConnectSteamModalProps) {
         <div className="error-message">
           {state.profile.steam.steamError}
         </div>
-        <div>
+        <div className="modal-body">
           You can find your Steam ID
-          <a href="https://store.steampowered.com/account/" target='_blank' rel="noreferrer">
-            {' '}here
+          <a className="pl-1" style={{color:"lightblue"}} href="https://store.steampowered.com/account/" target='_blank' rel="noreferrer">
+            here
           </a>
         </div>
-        <InputGroup className="mb-3">
+        <InputGroup className="mb-3 flex center col-8">
           <FormControl
             placeholder="Steam ID"
             aria-label="Steam ID"
+            className="col-12"
             aria-describedby="basic-addon2"
             onChange={(value: ChangeEvent<any>) => setSteamId(value.target.value)}
           />

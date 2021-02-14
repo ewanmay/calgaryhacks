@@ -9,16 +9,27 @@ import Userlist from '../../UserList';
 import VideoChat from '../../VideoChat';
 import CommonGames from '../CommonGames';
 import './Groups.css';
+import GameItem from '../GameItem';
+import { Game } from '../../../context/types';
 
 function Groups() {
   const [state, dispatch] = useContext(AppContext)
   const [lobbyCode, setLobbyCode] = useState('')
   const [inLobby, setInLobby] = useState(false)
+  const [mostVotedGame, setMostVotedGame] = useState({} as Game)
+  const [videoOn, setVideoOn] = useState(false)
   const inputRef = useRef({}) as RefObject<HTMLInputElement>
 
   useEffect(() => {
-    return () =>  leaveLobby() // leave lobby on unmount    
+    return () => leaveLobby() // leave lobby on unmount    
   }, [])
+
+  useEffect(() => {
+    let allGames = state.commonGames.steamGames.concat(state.commonGames.epicGames)
+    allGames = allGames.concat(state.commonGames.freeGames)
+    const max = allGames.filter(o => o.votes).reduce((prev: Game, current: Game) => ((prev?.votes?.length || 0) > (current?.votes?.length || 0)) ? prev : current, allGames[0])
+    setMostVotedGame(max);
+  }, [state.commonGames.epicGames, state.commonGames.freeGames, state.commonGames.steamGames])
 
   const createLobby = () => {
     // Ask server to create lobby
@@ -66,7 +77,7 @@ function Groups() {
                 aria-describedby="basic-addon1"
                 ref={inputRef}
                 onChange={(value: ChangeEvent<any>) => {
-                  if (inputRef && inputRef.current) {                    
+                  if (inputRef && inputRef.current) {
                     inputRef.current.value = value.target.value.toUpperCase()
                   }
                   setLobbyCode(value.target.value.toUpperCase())
@@ -86,7 +97,7 @@ function Groups() {
       {inLobby && (
         <>
           <div id='groups'>
-            <VideoChat roomName={lobbyCode} />
+            <VideoChat roomName={lobbyCode} setVideoOn={setVideoOn}/>
             <div id="groups-main">
               <div id="groups-left">
                 <div className="p-3">
@@ -102,10 +113,15 @@ function Groups() {
               </div>
               <div id="groups-middle">
                 <CommonGames></CommonGames>
+                {mostVotedGame?.appid && mostVotedGame?.votes && mostVotedGame?.votes?.length > 0 && (
+                  <div>
+                    Highest voted:
+                    <GameItem game={mostVotedGame}></GameItem>
+                  </div>)}
               </div>
               <div id="groups-right">
                 <h5>Chat</h5>
-                <Chat />
+                <Chat videoOn={videoOn}/>
               </div>
             </div>
           </div>

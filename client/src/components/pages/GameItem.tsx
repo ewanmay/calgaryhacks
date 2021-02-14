@@ -37,12 +37,14 @@ export default function GameItem({ game, showSetPlayer, setOpenGame, setPlayerMo
           <a className="col-4 flex left" href={game.website} target="_blank" rel="noreferrer">
             <b style={{ marginRight: 4 }}>{game.name}</b>
           </a>
-          {!showSetPlayer && <div className="flex">
-            <div className="">
-              votes: {game.votes ? game.votes : "0"}
+          {!showSetPlayer && (
+            <div className="flex center">
+              <div className="test">
+                votes: {game.votes ? game.votes : "0"}
+              </div>
+              <Button id={game.appid} className="mx-2" onClick={voteForFreeGame}>Vote</Button>
             </div>
-            <Button id={game.appid} onClick={voteForFreeGame}>Vote</Button>
-          </div>}
+          )}
 
           {game.minPlayers && game.maxPlayers &&
             (<div className="col-2">
@@ -60,15 +62,19 @@ export default function GameItem({ game, showSetPlayer, setOpenGame, setPlayerMo
         {game.name}
       </a>}
       {game.source === GameSource.Steam && (
-        <div className="col-12 px-0 game-list-item cursor flex space-between">
+        <div className="col-12 px-0 game-list-item cursor flex space-between ">
           <a className="col-4 flex left" href={game.website} target="_blank" rel="noreferrer">
             <b style={{ marginRight: 4 }}>{game.name}</b>
             <i>(Steam)</i>
           </a>
-          {!showSetPlayer && <div>votes: {game.votes ? game.votes : "0"}
-            <Button id={game.appid} className="mx-2"onClick={voteForSteamGame}>Vote</Button>
-          </div>
-          }
+          {!showSetPlayer && (
+            <div className="flex center">
+              <div className="test2">
+              votes: {game.votes ? game.votes : "0"}
+              </div>
+              <Button id={game.appid} className="mx-2" onClick={voteForSteamGame}>Vote</Button>
+            </div>
+          )}
           {!game.minPlayers && !game.maxPlayers && showSetPlayer &&
             (<div className="col-2">
               <div className="">

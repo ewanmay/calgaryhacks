@@ -1,9 +1,9 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
+import React, { ChangeEvent, useContext, useState } from 'react';
 import { InputGroup, FormControl, Button } from 'react-bootstrap';
 import { AppContext } from '../../../context/context';
 
 interface AddFriendModalProps {
-  close: any
+  close: () => void
 }
 
 function AddFriendModal({ close }: AddFriendModalProps) {
@@ -12,16 +12,17 @@ function AddFriendModal({ close }: AddFriendModalProps) {
 
   const addFriend = () => {
     state.socket.emit("send-friend-request", state.authState.username, friendName)
+    close()
   }
 
   return (
     <div className="modal-background flex center">
       <div className="modal flex center column">
         <div className="modal-header">
-          Add friend
+          Add Friend
         </div>
         <div className="modal-body">
-          Enter their username in the input below
+          Enter their username below
         </div>
         <div className="error-message">
           {state.profile.steam.steamError}
@@ -35,8 +36,8 @@ function AddFriendModal({ close }: AddFriendModalProps) {
             onChange={(value: ChangeEvent<any>) => setFriendName(value.target.value)}
           />
           <div className="col-12 p-0">
-            <Button className="m-3" onClick={addFriend}>Send</Button>
             <Button variant="secondary" onClick={() => close()}>Close</Button>
+            <Button className="m-3" onClick={addFriend}>Send</Button>
           </div>
         </InputGroup>
       </div>

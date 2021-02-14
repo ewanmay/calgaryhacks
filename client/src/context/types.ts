@@ -73,7 +73,7 @@ export interface Game {
   source: GameSource
   minPlayers?: number,
   maxPlayers?: number,
-  votes?: number
+  votes?: string[]
 }
 
 export interface CommonGames {

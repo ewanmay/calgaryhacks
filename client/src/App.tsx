@@ -30,13 +30,13 @@ function App() {
 
   const history = useHistory()
 
-  console.log(clickSfx)
+  // console.log(clickSfx)
   const [playClickSound] = useSound(clickSfx, { volume: 1 })
 
   useEffect(()=>{
     document.body.addEventListener("click", function (evt) {
-      console.log("body clicked");
-      playClickSound() 
+      // console.log("body clicked");
+      playClickSound() // TODO not working?
     }, true);
   },[])
 

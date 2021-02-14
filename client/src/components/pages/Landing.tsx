@@ -11,7 +11,7 @@ function Landing() {
 
   return (
     <div className="col-12 p-0 flex fill center landing">  
-          <div className="col-12 p-0" style={{ position: 'absolute', top: 15, fontSize: 20}} >
+          <div className="col-12 p-0" style={{ position: 'absolute', top: 0, fontSize: 20, fontStyle: 'italic'}} >
             Welcome back, {state.authState.username}
           </div>
           <div className='test'>

@@ -5,9 +5,10 @@ import { Button } from 'react-bootstrap';
 import VideoParticipant from './VideoParticipant'
 interface Props {
   roomName: string
+  setVideoOn: (x: boolean) => void
 }
 
-const VideoChat = ({ roomName }: Props) => {
+const VideoChat = ({ roomName, setVideoOn }: Props) => {
   const [state, dispatch] = useContext(AppContext)
   const [room, setRoom] = useState(null as any);
   const [participants, setParticipants] = useState([] as any[]);
@@ -33,7 +34,8 @@ const VideoChat = ({ roomName }: Props) => {
       Video.connect((token), {
         name: roomName
       }).then((room: any) => {
-        setRoom(room);
+        setRoom(room);    
+        setVideoOn(true)
         room.on('participantConnected', participantConnected);
         room.on('participantDisconnected', participantDisconnected);
         room.participants.forEach(participantConnected);
@@ -62,6 +64,7 @@ const VideoChat = ({ roomName }: Props) => {
       room.disconnect()
     }
     setParticipants([])
+    setVideoOn(false)
   };
 
 

@@ -56,10 +56,15 @@ function Message({m}: MessageProps) {
   )
 }
 
-function Chat() {
+interface Props {
+  videoOn: boolean
+}
+function Chat({videoOn}: Props) {
   const [state, dispatch] = useContext(AppContext)
   const [text, setText] = useState('')
   const [messages, setMessages] = useState([] as ServerMessage[])
+
+  console.log('chat, videoOn', videoOn)
 
   function createMessage(msg: string): ClientMessage  {
     return {
@@ -91,8 +96,8 @@ function Chat() {
   }
 
   return (
-    <div id='chat'>
-      <div id='messagesContainer'>
+    <div id='chat' style={{maxHeight: videoOn ? '40vh' : ''}}>
+      <div id='messagesContainer' style={{maxHeight: videoOn ? '90%' : '95%'}}>
         <ul id='messages'>
           {messages.map((m: ServerMessage, i) => (
             <Message key={i} m={m} />

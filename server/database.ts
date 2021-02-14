@@ -218,6 +218,7 @@ class Database {
   }
 
   deleteFriendRequest(id:number, callback){
+    console.log("Deleting friend request: ", id)
     const sql = 'DELETE FROM friend_request WHERE id = ?'
     const params = [id]
     this.db.run(sql, params, function (err, result) {
@@ -226,6 +227,18 @@ class Database {
         return callback(false)
       }
       return callback(true)
+    })
+  }
+  checkValidFriendRequest(to: string, from: string, callback) {
+    console.log(to, from)
+    const sql = 'SELECT * FROM friend_request WHERE sending = ? AND receiving = ?'
+    const params = [from, to ]
+    this.db.get(sql, params, function (err, row) {
+      if (err) {
+        console.log('ERROR getting friend request', err.message)
+        return callback(false)
+      }
+      return callback(row)
     })
   }
   
@@ -288,8 +301,6 @@ class Database {
       return callback({ id: this.lastID })
     })
   }
-
-
 
   updatePreferredPlayers(appid, username: string, min:number, max:number, callback){
     const sql = 'UPDATE user_steam_games SET prefferedMinPlayers = ?, prefferedMaxPlayers = ? WHERE appid = ? and username = ? '

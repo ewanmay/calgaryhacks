@@ -135,7 +135,7 @@ io.on('connection', (socket) => {
   })
 
 
-  socket.on('update-preferred-players', (username: string, appid:string, min:number, max:number) => {
+  socket.on('update-preferred-players', (username: string, appid: string, min: number, max: number) => {
     console.log('update-preferred-players: ', username, appid, min, max)
     const sendResponseToClient = (success) => {
       console.log('success: ', success)
@@ -144,7 +144,7 @@ io.on('connection', (socket) => {
     }
     db.updatePreferredPlayers(appid, username, min, max, sendResponseToClient)
   })
-  
+
   socket.on('get-free-games', () => {
     console.log('getting free games ')
     const sendResponseToClient = (rows) => {
@@ -174,7 +174,7 @@ io.on('connection', (socket) => {
       const addPlayerPreferrencesToGame = (row, appid) => {
         const min = row?.prefferedMinPlayers
         const max = row?.prefferedMaxPlayers
-        if(min && max){
+        if (min && max) {
           response.games.filter(g => g.appid == appid).map(g => {
             g.minPlayers = min
             g.maxPlayers = max
@@ -222,7 +222,7 @@ io.on('connection', (socket) => {
           db.addUserSteamGame(appid, username, getPlayerPrefrence)
         }
         else {
-          console.log(appid);
+          // console.log(appid);
           steamApi.getGameInfo(appid, appendResultListAndAddSteamGameToDatabase)
         }
       }
@@ -249,7 +249,7 @@ io.on('connection', (socket) => {
     }
 
     const sendApiRequests = async (row) => {
-      console.log('got row', row)
+      // console.log('got row', row)
       if (row && row.steam_id) {
         await steamApi.getUserGameList(row.steam_id, populateGameList);
         await steamApi.getUserInfo(row.steam_id, populateUserData);
@@ -274,32 +274,112 @@ io.on('connection', (socket) => {
 
   socket.on('send-friend-request', (from: string, to: string) => {
     console.log('send-friend-request', from, to)
+
+    const sendOutgoingToClient = (rows) => {
+      console.log('outgoing-friend-requests: ', rows)
+      socket.emit('get-outgoing-friend-requests-response', rows)
+    }
+
     const sendResponseToClient = (success) => {
       console.log('added request: ', success)
       socket.emit('send-friend-request-response', success)
+      db.getOutgoingRequests(from, sendOutgoingToClient)
     }
-    db.addFriendRequest(from, to, sendResponseToClient)
+
+    const ensureNotAlreadyFriends = (rows) => {      
+      if (rows.some(item => item.username2 === to) ) {
+        console.log("already friends")
+        socket.emit('send-friend-request-response', false)
+      }
+      else {
+        db.addFriendRequest(from, to, sendResponseToClient)
+      }
+    }
+
+    const validateUniqueRequest = (row) => {
+      console.log("ValidateUniqueRequest:", row)
+      if (row && row.id) {
+        console.log('Already friends', false)
+        socket.emit('send-friend-request-response', false)
+      }
+      else {
+        db.getUserFriends(from, ensureNotAlreadyFriends)
+      }
+    }
+
+    const checkUserExists = (row) => {
+      console.log("ValidateUniqueRequest:", row)
+      if (row && row.username) {
+        db.checkValidFriendRequest(to, from, validateUniqueRequest)
+      }
+      else {
+        console.log('User Exists', false)
+        socket.emit('send-friend-request-response', false)
+      }
+    }
+
+    db.getUserInfo(to, checkUserExists)
   })
 
   socket.on('accept-friend-request', (id: number) => {
+    console.log('accept-friend-request', id);
+    
     const addFriend = (row) => {
       console.log(row)
-      const to = row.sending
-      const from = row.receiving
-      if(to && from){
-        db.addFriend(to, from, ()=>{})
-        db.addFriend(from, to, ()=>{})
-        db.deleteFriendRequest(id, ()=>{})
-      }else{
+      console.log("friend-request row: ", row)
+      const from = row.sending
+      const to = row.receiving
+      if (to && from) {
+        db.addFriend(to, from, () => { }) 
+        db.addFriend(from, to, () => { })
+        db.deleteFriendRequest(id, () => { })
+
+        const sendFriendsResponseToClient = (rows) => {
+          console.log("Friend rows: ", rows)
+          const friends: Friend[] = rows.map((friend) => ({ username: friend.username2 }))
+          console.log("Emitting friends array: ", friends)
+          socket.emit('get-friends-response', friends)
+        }
+    
+        const sendResponseToClient = (rows) => {
+          console.log('incoming-friend-requests: ', rows)
+          socket.emit('get-incoming-friend-requests-response', rows)
+        }
+        db.getIncommingRequests(to, sendResponseToClient)
+        db.getUserFriends(to, sendFriendsResponseToClient)
+
+      } else {
         socket.emit('accept-friend-request-response', false)
       }
     }
-    db.getFriendRequest(id, addFriend)
+    db.getFriendRequest(id, addFriend) 
+  })
+
+  socket.on('delete-friend-request', (id: number, username: string) => {
+    const updateUser = (success) => {
+      console.log("delete-friend-request", success)
+      if(success){
+        const sendOutgoingResponseToClient = (rows) => {
+          console.log('outgoing-friend-requests: ', rows)
+          socket.emit('get-outgoing-friend-requests-response', rows)
+        }
+        const sendIncommingResponseToClient = (rows) => {
+          console.log('incoming-friend-requests: ', rows)
+          socket.emit('get-incoming-friend-requests-response', rows)
+        }
+        db.getOutgoingRequests(username, sendOutgoingResponseToClient)
+        db.getIncommingRequests(username, sendIncommingResponseToClient)
+      }
+    }
+
+    db.deleteFriendRequest(id, updateUser) 
   })
 
   const getFriends = (username: string) => {
     const sendResponseToClient = (rows) => {
-      const friends: Friend[] = rows.map((friend) => {name: friend.username2})
+      console.log("Friend rows: ", rows)
+      const friends: Friend[] = rows.map((friend) => ({ username: friend.username2 }))
+      console.log("Emitting friends array: ", friends)
       socket.emit('get-friends-response', friends)
     }
 
@@ -308,9 +388,9 @@ io.on('connection', (socket) => {
   socket.on('get-friends', (username: string) => getFriends(username))
 
   socket.on('get-incoming-friend-requests', (username: string) => {
-    console.log('get-incoming-friend-requests', username) 
+    console.log('get-incoming-friend-requests', username)
     const sendResponseToClient = (rows) => {
-      console.log('added request: ', rows)
+      console.log('incoming-friend-requests: ', rows)
       socket.emit('get-incoming-friend-requests-response', rows)
     }
     db.getIncommingRequests(username, sendResponseToClient)
@@ -319,7 +399,7 @@ io.on('connection', (socket) => {
   socket.on('get-outgoing-friend-requests', (username: string) => {
     console.log('get-outgoing-friend-requests', username)
     const sendResponseToClient = (rows) => {
-      console.log('added request: ', rows)
+      console.log('outgoing-friend-requests: ', rows)
       socket.emit('get-outgoing-friend-requests-response', rows)
     }
     db.getOutgoingRequests(username, sendResponseToClient)

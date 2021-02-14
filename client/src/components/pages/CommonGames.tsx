@@ -51,9 +51,9 @@ function CommonGames() {
         </div>
       </div>
       <div className="col-12 p-0 fill left top center common-game-container">
-        {state.commonGames.steamGames.map((game: Game) => (<GameItem game={game} />))}
-        {state.commonGames.epicGames.map((game: Game) => (<GameItem game={game} />))}
-        {state.commonGames.freeGames.map((game: Game) => (<GameItem game={game} />))}
+        {state.commonGames.steamGames.map((g: Game) => (<GameItem game={g} key={g.appid}/>))}
+        {state.commonGames.epicGames.map((g: Game) => (<GameItem game={g} key={g.appid}/>))}
+        {state.commonGames.freeGames.map((g: Game) => (<GameItem game={g} key={g.appid}/>))}
       </div>
     </div>
   );

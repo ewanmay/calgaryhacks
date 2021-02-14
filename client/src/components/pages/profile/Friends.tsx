@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useContext, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { AppContext } from '../../../context/context';
-import { faCheck, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faPlus, faTimes, faMinusCircle } from "@fortawesome/free-solid-svg-icons";
 import { FriendRequest } from '../../../context/types';
 
 interface FriendsProps {
@@ -22,19 +22,20 @@ export default function Friends({ setShowFriendModal }: FriendsProps) {
     state.socket.emit("accept-friend-request", request.id)
   }
 
-  const onReject = (request: FriendRequest) => {
-    state.socket.emit("deny-friend-request")
+
+  const deleteRequest = (request: FriendRequest) => {
+    state.socket.emit("delete-friend-request", request.id, state.authState.username)
   }
 
   return (
-    <div className="col-12 p-0 center flex">
+    <div className="col-12 p-0 center top flex">
       <div className="col-6 p-0 flex top center">
         <h5 className="m-0">Friends List</h5>
         {state.profile.friends.map(friend =>
           <div className="col-12 p-0">
-            {friend}
+            {friend?.username}
           </div>)}
-        <div className="col-auto cursor flex center"  onClick={() => setShowFriendModal(true)} style={{ color: "lightgreen" }}>
+        <div className="col-auto cursor flex center" onClick={() => setShowFriendModal(true)} style={{ color: "lightgreen" }}>
           Add Friend <FontAwesomeIcon className="mx-2" icon={faPlus}></FontAwesomeIcon>
         </div>
       </div>
@@ -49,7 +50,7 @@ export default function Friends({ setShowFriendModal }: FriendsProps) {
               <div>
                 {request.sending}
                 <FontAwesomeIcon onClick={() => onAccept(request)} style={{ color: "lightgreen" }} className="cursor mx-2" icon={faCheck} />
-                <FontAwesomeIcon onClick={() => onReject(request)} style={{ color: "lightred" }} icon={faTimes} className="cursor" />
+                <FontAwesomeIcon onClick={() => deleteRequest(request)} style={{ color: "lightred" }} icon={faTimes} className="cursor" />
               </div>
             ))}
           </div>
@@ -58,6 +59,7 @@ export default function Friends({ setShowFriendModal }: FriendsProps) {
             {state.profile.outgoingRequests.map(request => (
               <div>
                 {request.receiving}
+                <FontAwesomeIcon onClick={() => deleteRequest(request)} style={{ color: "lightred" }} icon={faMinusCircle} className="cursor mx-2" />
               </div>
             ))}
           </div>

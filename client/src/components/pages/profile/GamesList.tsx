@@ -21,7 +21,7 @@ export default function GamesList({ setOpenGame, setPlayerModal }: GamesListProp
         {state.profile.steam.games.map((game: Game) => {
           return (
             <div className="col-12 px-0 game-list-item cursor flex space-between">
-              <GameItem game={game} setPlayerModal={setPlayerModal} setOpenGame={setOpenGame} showSetPlayer={true}/>
+              <GameItem key={game.appid} game={game} setPlayerModal={setPlayerModal} setOpenGame={setOpenGame} showSetPlayer={true}/>
             </div>
           )
         })}
