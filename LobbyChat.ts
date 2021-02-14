@@ -1,4 +1,4 @@
-import { User, ClientMessage, ServerMessage, Game } from '../client/src/context/types';
+import { User, ClientMessage, ServerMessage, Game } from './client/src/context/types';
 
 class LobbyChat {
   users: User[]

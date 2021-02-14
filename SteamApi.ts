@@ -1,4 +1,4 @@
-import { Game } from '../client/src/context/types';
+import { Game } from './client/src/context/types';
 
 const axios = require('axios').default;
 

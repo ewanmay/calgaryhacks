@@ -1,4 +1,4 @@
-import { CommonGames, Game, GameSource, User } from '../client/src/context/types';
+import { CommonGames, Game, GameSource, User } from './client/src/context/types';
 
 const LobbyChat = require('./LobbyChat')
 const AccessToken = require('twilio').jwt.AccessToken;

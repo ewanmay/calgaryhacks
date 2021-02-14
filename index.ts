@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios';
-import { AuthState, LoginObj, User, Steam, Game, GameSource, Friend } from '../client/src/context/types';
+import { AuthState, LoginObj, User, Steam, Game, GameSource, Friend } from './client/src/context/types';
 
 const app = require('express')()
 const http = require('http').createServer(app)

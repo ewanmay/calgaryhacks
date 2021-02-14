@@ -1,4 +1,4 @@
-import { Game } from '../client/src/context/types';
+import { Game } from './client/src/context/types';
 
 const sqlite3 = require('sqlite3').verbose()
 
