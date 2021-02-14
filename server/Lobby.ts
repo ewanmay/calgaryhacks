@@ -17,7 +17,7 @@ class Lobby {
     this.db = db
     this.lobbyCode = lobbyCode
     this.users = []
-    this.lobbyChat = new LobbyChat(this.users, this.sendMessageToAllUsers.bind(this))
+    this.lobbyChat = new LobbyChat(this.users, this.sendMessageToAllUsers.bind(this), this.sendMessageToOthers.bind(this))
 
     this.io.emit('test', 'hello world')
     console.log("Creating new lobby")
@@ -44,9 +44,9 @@ class Lobby {
     console.log('sending joined-lobby to', username)
     socket.emit('joined-lobby', this.getLobbyInfo())
     this.sendMessageToAllUsers('lobby-updated', this.getLobbyInfo())
-    socket.once('leave-lobby', () => {
-      this.removeUserFromLobby(username)
-    })
+    // socket.once('leave-lobby', () => {
+    //   this.removeUserFromLobby(username)
+    // })
 
     this.lobbyChat.setupSocketConnectionsForUser(socket)
   }
@@ -78,11 +78,23 @@ class Lobby {
     // if (this.users) console.log("USERS", this.users.map(u=>u.username))
     // if(this.users) this.users.forEach((user) => user.socket.emit(command, message))
     if (this.io) {
-      console.log("Sending command: " + command)
+      // console.log("Sending command: " + command)
       this.io.to(this.lobbyCode).emit(command, message)
     }
   }
 
+  sendMessageToOthers(command: string, message: any) {
+    if (!this.users) return
+    console.log('users',this.users)
+    this.users.forEach((user) => {
+      if (user.username !== message.username){
+        console.log(message.username, 'sending msg', message.messageContents, 'to', user.username)
+        user.socket.emit(command, message)
+      } else{
+        console.log('not sending from', message.username, 'to', user.username)
+      }
+    })
+  }
 }
 
 module.exports = Lobby

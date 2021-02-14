@@ -3,25 +3,26 @@ import { User, ClientMessage, ServerMessage } from '../client/src/context/types'
 class LobbyChat {
   users: User[]
   sendMessageToAllUsers: (command: string, message: any) => void
+  sendMessageToOthers: (command: string, message: any) => void
   messageLog: ServerMessage[]
 
-  constructor(users: User[], sendMessageToAllUsers: (command: string, message: any) => void){
+  constructor(users: User[], sendMessageToAllUsers: (command: string, message: any) => void, sendMessageToOthers: (command: string, message: any) => void){
     this.users = users
     this.sendMessageToAllUsers = sendMessageToAllUsers
+    this.sendMessageToOthers = sendMessageToOthers
     this.messageLog = [] 
   }
 
   setupSocketConnectionsForUser(socket){
     socket.on('add-chat-message', (msg: ClientMessage) => {
-      console.log("Received chat message from: " + msg.username)
-      const serverMessage = {username: msg.username, messageContents: msg.messageContents, date: this.formattedDate(new Date())}
+      console.log("add-chat-message from:",msg.username,":", msg.messageContents)
+      const serverMessage = {username: msg.username, messageContents: msg.messageContents, date: new Date().toUTCString()}
       this.messageLog.push(serverMessage);
-      if (this.messageLog.length > 200)
-      {
+      if (this.messageLog.length > 200) {
          this.messageLog.shift();
       }
-
-      this.sendMessageToAllUsers('chat-message', serverMessage)
+      // this.sendMessageToOthers('chat-message', serverMessage)
+      console.log('sending messageLog')
       this.sendMessageToAllUsers('message-log', this.messageLog)
     })
 
@@ -30,12 +31,6 @@ class LobbyChat {
 
   removeSocketConnectionsForUser(socket){
     socket.removeAllListeners('add-chat-message')
-  }
-
-  formattedDate(date: any): string
-  {
-    let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes();
   }
 
 }

@@ -1,4 +1,5 @@
-import { AuthState, LoginObj, User } from '../client/src/context/types';
+import { AxiosResponse } from 'axios';
+import { AuthState, LoginObj, User, Steam, Game } from '../client/src/context/types';
 
 const app = require('express')()
 const http = require('http').createServer(app)
@@ -27,12 +28,12 @@ const removeUserFromLobbies = (socket) => {
     userSocketList.splice(index, 1)
     lobbyList.removeUserFromLobbies(user.username)
   }
-} 
+}
 
 io.on('connection', (socket) => {
   console.log('User Connected')
 
-  socket.on('login', ({username, password}: LoginObj) => {
+  socket.on('login', ({ username, password }: LoginObj) => {
     if (!username || !password) {
       return
     }
@@ -51,10 +52,10 @@ io.on('connection', (socket) => {
         errorMessage = 'We encountered an error. Please try again.'
       }
       else { // success
-          id=user.id,
-          loggedIn=true
-          email = user.email
-          console.log(username, 'logged in')
+        id = user.id,
+          loggedIn = true
+        email = user.email
+        console.log(username, 'logged in')
       }
       const response: AuthState = {
         id,
@@ -82,12 +83,12 @@ io.on('connection', (socket) => {
       let errorMessage = ''
       // emits an AuthState object
       if (!user?.id) {
-        errorMessage='This username or email are already taken.'
+        errorMessage = 'This username or email are already taken.'
       }
       else {
-        id=user.id,
-        loggedIn=true
-          console.log(username, 'registered')
+        id = user.id,
+          loggedIn = true
+        console.log(username, 'registered')
       }
       const response: AuthState = {
         id,
@@ -102,10 +103,13 @@ io.on('connection', (socket) => {
     db.addNewUser(username, password, email, sendResponseToClient)
   })
 
-  
-  socket.on('add-steamId', (username, steamId) => {
+
+  socket.on('add-steamid', (username, steamId) => {
+    console.log('adding steam id: ', username, steamId)
     const sendResponseToClient = (success) => {
-      socket.emit('steamId-added', success)
+      console.log('success: ', success)
+      socket.emit('steamid-added', success)
+      getSteamInfo(username)
     }
     db.addSteamId(username, steamId, sendResponseToClient)
   })
@@ -126,27 +130,125 @@ io.on('connection', (socket) => {
     lobbyList.removeUserFromLobbies(username)
   })
 
-  socket.on('get-games-list', (username: string) => {
-    const sendResponseToClient = (gameList) => {
+  const getSteamInfo = (username: string) => {
+    console.log('get-steam-info', username)
+
+    const response: Steam = {
+      steamUsername: '',
+      steamError: '',
+      profileUrl: '',
+      avatarUrl: '',
+      games: []
+    }
+
+    const populateGameList = async (res) => {
+
+      const gameList = res.response?.games
+
+      // const idsToGet = []
+
+      const apiCallback = (restult: any, appid) => {
+        const game: Game = {
+          name: '',
+          multiplayer: false,
+          website: ''
+        }
+        const appResponse = restult[appid];
+        if (appResponse.success) {
+          const appData = appResponse.data;
+          game.name = appData.name || '';
+          game.website = appData.website || '';
+          game.multiplayer = appData.categories?.some(c => c.id == 1);
+        }
+
+        db.addSteamGame(appid, game, () => { })
+        response.games.push(game)
+      }
+
+      const dbCallback = (result: any, id: string) => {
+        if (result && result?.appid) {
+          response.games.push(
+            {
+              name: result.name,
+              website: result.website,
+              multiplayer: result.multiplayer
+            }
+          )
+        }
+        else {
+          console.log(id);
+          steamApi.getGameInfo(id,apiCallback)
+        }
+      }
+
       if(gameList){
-        socket.emit('get-games-list-response', gameList);
+        gameList?.map((game) => db.getSteamGame(game.appid, dbCallback))
       }
-      else{
-        // TODO: Error response
+      else {
+        response.steamError += 'Unable to find games. ';
+      }
+
+      // if (idsToGet && idsToGet.length > 0) {
+      //   // const allGameResponses = await Promise.all(idsToGet.map(id => steamApi.getGameInfo(id).catch(err => console.log(err))));
+      //   const allGameResponses = await Promise.all([steamApi.getGameInfo(idsToGet[0]).catch(err => console.log(err))]);
+
+      //   response.games = allGameResponses.filter(item => item).map((response: AxiosResponse, index: number) => {
+      //     const game: Game = {
+      //       name: '',
+      //       multiplayer: false,
+      //       website: ''
+      //     }
+      //     const appResponse = response.data[idsToGet[index]];
+      //     if (appResponse.success) {
+      //       const appData = appResponse.data;
+      //       game.name = appData.name || '';
+      //       game.website = appData.website || '';
+      //       game.multiplayer = appData.categories?.some(c => c.id == 1);
+      //     }
+
+      //     db.addSteamGame(idsToGet[index], game, () => { })
+      //     return game
+
+      //   })
+
+      // }
+      // else {
+      //   response.steamError += 'Unable to find games. ';
+      // }
+    }
+
+    const populateUserData = (res) => {
+      const player = res.response?.players[0]
+      if (player) {
+        response.steamUsername = player.personaname || '';
+        response.avatarUrl = player.avatar || '';
+        response.profileUrl = player.profileurl || '';
+      }
+      else {
+        response.steamError += 'Unable to find user data. ';
+      }
+
+    }
+
+    const sendApiRequests = async (row) => {
+      console.log('got row', row)
+      if (row && row.steam_id) {
+        await steamApi.getUserGameList(row.steam_id, populateGameList);
+        await steamApi.getUserInfo(row.steam_id, populateUserData);
+
+        socket.emit('get-steam-info-response', response);
+      }
+      else {
+        response.steamError += 'Unable to find steam id. ';
+
       }
     }
 
-    const sendApiRequest = (row) => {
-      if(row && row.steam_id){
-        steamApi.getUserGameList(row.steam_id, sendResponseToClient);   
-      }
-      else{
-        // TODO: Error response
-      }
-    }
+    db.getUserInfo(username, sendApiRequests);
+  }
 
-    db.getUserInfo(username, sendApiRequest);
-  })
+
+  socket.on('get-steam-info', (username: string) => getSteamInfo(username))
 
   socket.on('disconnect', () => {
     // TODO anything?

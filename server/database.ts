@@ -1,3 +1,5 @@
+import { Game } from '../client/src/context/types';
+
 const sqlite3 = require('sqlite3').verbose()
 
 const DBSOURCE = 'db.sqlite'
@@ -13,6 +15,7 @@ class Database {
       } else {
         console.log('Connected to SQLite database.')
         this.makeUserTable()
+        this.makeSteamGameTable() 
       }
     })
   }
@@ -44,6 +47,7 @@ class Database {
       }
     )
   }
+
   /*
    *   Please note the callback may not get called immediately.
    *
@@ -57,6 +61,7 @@ class Database {
 
     this.db.get(sql, params, (err, row) => {
       if (err) {
+        console.log(err)
         return callback(err.message)
       }
       return callback(row)
@@ -99,6 +104,47 @@ class Database {
       return callback(true)
     })
 
+  }
+
+  makeSteamGameTable() {
+    this.db.run(
+      `CREATE TABLE steam_game (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        appid INTEGER NOT NULL UNIQUE, 
+        name TEXT NOT NULL, 
+        website TEXT,
+        multiplayer INTEGER 
+      )`,
+      (err) => {
+        if (err) {
+          // Table already created
+          console.log('SQLite found table: steam_game')
+        } 
+      }
+    )
+  }
+
+  addSteamGame(appid, game: Game, callback){
+    const sql = 'INSERT INTO steam_game (appid, name, website, multiplayer) VALUES (?,?,?,?)'
+    const params = [appid, game.name, game.website, game.multiplayer]
+    this.db.run(sql, params, function (err, result) {
+      if (err) {
+        return callback(err.message)
+      }
+      return callback({ id: this.lastID })
+    })
+  }
+
+  getSteamGame(appid, callback){
+    const sql = 'select * from steam_game where appid = ?'
+    const params = [appid]
+
+    this.db.get(sql, params, (err, row) => {
+      if (err) {
+        return callback(err.message, appid)
+      }
+      return callback(row, appid)
+    })
   }
 
 }
