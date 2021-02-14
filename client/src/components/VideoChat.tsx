@@ -3,6 +3,7 @@ import { AppContext } from '../context/context';
 import Video from 'twilio-video';
 import { Button } from 'react-bootstrap';
 import VideoParticipant from './VideoParticipant'
+
 interface Props {
   roomName: string
   setVideoOn: (x: boolean) => void
@@ -69,7 +70,8 @@ const VideoChat = ({ roomName, setVideoOn }: Props) => {
 
 
   const getToken = () => {
-    state.socket.on('token', (token: string) => {
+    state.socket.off('token')
+    state.socket.once('token', (token: string) => {
       console.log("got token:", token.slice(-10))
       setToken(token);
     })

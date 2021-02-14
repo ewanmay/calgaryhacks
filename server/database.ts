@@ -330,7 +330,7 @@ class Database {
       }
       return callback(row, appid) 
     })
-  }
+  } 
 
   getSteamGame(appid, callback){
     const sql = 'select * from steam_game where appid = ?'
@@ -339,7 +339,7 @@ class Database {
     this.db.get(sql, params, (err, row) => {
       if (err) {
         return callback(err.message, appid)
-      }
+      } 
       return callback(row, appid)
     })
   }

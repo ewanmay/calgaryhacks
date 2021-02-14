@@ -17,7 +17,7 @@ function Register() {
     state.socket.on("register-response", (res: AuthState) => {
       if (res.loggedIn) {
         dispatch({ type: "LOGIN", payload: res })
-        history.push("/");
+        history.push("/profile");
       }
     })
   }, [])

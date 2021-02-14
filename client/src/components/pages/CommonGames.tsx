@@ -32,7 +32,7 @@ function CommonGames() {
   }
 
   return (
-    <div className="col-12 p-0 flex fill center top landing column">
+    <div className="col-12 p-0 flex fill center top landing column" style={{overflowX: 'hidden'}}>
       <div className="col-12 header">
         Shared Games
       </div>
@@ -50,7 +50,7 @@ function CommonGames() {
           <label className="custom-control-label" htmlFor="epicGames"> Epic Games </label>
         </div>
       </div>
-      <div className="col-12 p-0 fill left top center common-game-container">
+      <div className="col-12 p-0 fill left top center common-game-container" style={{display: 'contents'}}>
         {state.commonGames.steamGames.map((g: Game) => (<GameItem game={g} key={g.appid}/>))}
         {state.commonGames.epicGames.map((g: Game) => (<GameItem game={g} key={g.appid}/>))}
         {state.commonGames.freeGames.map((g: Game) => (<GameItem game={g} key={g.appid}/>))}

@@ -111,8 +111,8 @@ function Groups() {
                 </div>
                 <Userlist />
               </div>
-              <div id="groups-middle">
-                <CommonGames></CommonGames>
+              <div id="groups-middle" style={{maxHeight: videoOn ? '40vh' : '80vh'}}>
+                <CommonGames />
                 {mostVotedGame?.appid && mostVotedGame?.votes && mostVotedGame?.votes?.length > 0 && (
                   <div>
                     Highest voted:

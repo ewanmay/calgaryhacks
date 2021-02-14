@@ -96,7 +96,7 @@ function Chat({videoOn}: Props) {
   }
 
   return (
-    <div id='chat' style={{maxHeight: videoOn ? '40vh' : ''}}>
+    <div id='chat' style={{maxHeight: videoOn ? '38vh' : ''}}>
       <div id='messagesContainer' style={{maxHeight: videoOn ? '90%' : '95%'}}>
         <ul id='messages'>
           {messages.map((m: ServerMessage, i) => (

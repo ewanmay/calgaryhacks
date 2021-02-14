@@ -179,8 +179,8 @@ class Lobby {
       multiplayer: true,
       website: row.website,
       appid: row.id,
-      minPlayers: row.minPlayers,
-      maxPlayers: row.maxPlayers,
+      minPlayers: row.prefferedMinPlayers,
+      maxPlayers: row.prefferedMaxPlayers,
       source: GameSource.Free,
       votes: []
     }
@@ -194,8 +194,8 @@ class Lobby {
       multiplayer: row.multiplayer,
       website: row.website,
       appid: row.appid,
-      minPlayers: row.minPlayers,
-      maxPlayers: row.maxPlayers,
+      minPlayers: row.prefferedMinPlayers,
+      maxPlayers: row.prefferedMaxPlayers,
       source: GameSource.Steam,
       votes: []
     }
@@ -226,33 +226,35 @@ class Lobby {
       }
 
       const filteredSteamGames = [];
-      userGameList.forEach((game) => {
-        if (userGameList.filter((filteredGame) => game.appid === filteredGame.appid).length === this.users.length && !filteredSteamGames.some(filteredGame => filteredGame.appid === game.appid)) {
+      const noNamesRemoved = userGameList.filter((game) => game.name !== "")
+      noNamesRemoved.forEach((game) => {
+        if (noNamesRemoved.filter((filteredGame) => game.appid === filteredGame.appid).length === this.users.length && !filteredSteamGames.some(filteredGame => filteredGame.appid === game.appid)) {
 
           // Check min-max players of this game
           let minSum = 0;
           let numMins = 0;
-          userGameList.filter((filteredGame) => game.appid === filteredGame.appid).forEach((game) => {
+          noNamesRemoved.filter((filteredGame) => game.appid === filteredGame.appid).forEach((game) => {
             if(game.minPlayers){
               minSum += game.minPlayers
               numMins++
             }
           })
-          const meanMin = Math.floor(minSum / numMins)
+          const meanMin = numMins !== 0? Math.floor(minSum / numMins) : 0
 
           let maxSum = 0;
           let numMaxs = 0;
-          userGameList.filter((filteredGame) => game.appid === filteredGame.appid).forEach((game) => {
+          noNamesRemoved.filter((filteredGame) => game.appid === filteredGame.appid).forEach((game) => {
             if(game.maxPlayers){
               maxSum += game.maxPlayers
               numMaxs++
             }
           })
-          const meanMax = Math.floor(minSum / numMaxs)
+          const meanMax = numMaxs !== 0? Math.floor(maxSum / numMaxs) : 0
           game.minPlayers = meanMin;
           game.maxPlayers = meanMax;
 
           if((minSum === 0 || game.minPlayers <= this.users.length) && (maxSum === 0 || game.maxPlayers >= this.users.length)){
+            console.log("Adding game: ", game)
             filteredSteamGames.push(game)
           }
         }
@@ -266,6 +268,40 @@ class Lobby {
     const populateFreeGamesAndPopulateSteamGames = (rows) => {
       if (this.filterFreeGames) {
         this.freeGames = rows.map((row) => this.convertRowToGameObject(row))
+        const filteredFreeGames = [];
+        this.freeGames.forEach((game) => {
+          if (this.freeGames.filter((filteredGame) => game.appid === filteredGame.appid).length === this.users.length && !filteredFreeGames.some(filteredGame => filteredGame.appid === game.appid)) {
+
+            // Check min-max players of this game
+            let minSum = 0;
+            let numMins = 0;
+            this.freeGames.filter((filteredGame) => game.appid === filteredGame.appid).forEach((game) => {
+              if(game.minPlayers){
+                minSum += game.minPlayers
+                numMins++
+              }
+            })
+            const meanMin = numMins !== 0? Math.floor(minSum / numMins) : 0
+
+            let maxSum = 0;
+            let numMaxs = 0;
+            this.freeGames.filter((filteredGame) => game.appid === filteredGame.appid).forEach((game) => {
+              if(game.maxPlayers){
+                maxSum += game.maxPlayers
+                numMaxs++
+              }
+            })
+            const meanMax = numMaxs !== 0? Math.floor(maxSum / numMaxs) : 0
+            game.minPlayers = meanMin;
+            game.maxPlayers = meanMax;
+
+            if((minSum === 0 || game.minPlayers <= this.users.length) && (maxSum === 0 || game.maxPlayers >= this.users.length)){
+              console.log("Adding game: ", game)
+              filteredFreeGames.push(game)
+            }
+            this.freeGames = filteredFreeGames
+          }
+        })
       }
       else {
         this.freeGames = []

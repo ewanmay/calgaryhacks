@@ -25,4 +25,6 @@
 
 #groups-middle {
     flex: 2;
+    overflow-y: auto;
+    overflow-x: hidden;
 }

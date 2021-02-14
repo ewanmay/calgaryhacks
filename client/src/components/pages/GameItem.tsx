@@ -46,7 +46,7 @@ export default function GameItem({ game, showSetPlayer, setOpenGame, setPlayerMo
             </div>
           )}
 
-          {game.minPlayers && game.maxPlayers &&
+          {game.minPlayers > 0 && game.maxPlayers > 0 &&
             (<div className="col-2">
               <div className="">
                 {game.minPlayers}-{game.maxPlayers} players
@@ -75,7 +75,7 @@ export default function GameItem({ game, showSetPlayer, setOpenGame, setPlayerMo
               <Button id={game.appid} className="mx-2" onClick={voteForSteamGame}>Vote</Button>
             </div>
           )}
-          {!game.minPlayers && !game.maxPlayers && showSetPlayer &&
+          {game.minPlayers === 0 && game.maxPlayers === 0 && showSetPlayer &&
             (<div className="col-2">
               <div className="">
                 <Button onClick={() => { setPlayerModal(true); setOpenGame(game) }}>Set Players</Button>
@@ -83,7 +83,7 @@ export default function GameItem({ game, showSetPlayer, setOpenGame, setPlayerMo
             </div>)
           }
 
-          {game.minPlayers && game.maxPlayers &&
+          {game.minPlayers > 0 && game.maxPlayers > 0 &&
             (<div className="col-2">
               <div className="">
                 {game.minPlayers}-{game.maxPlayers} players

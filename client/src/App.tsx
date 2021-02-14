@@ -44,7 +44,7 @@ function App() {
     if (!state.authState.loggedIn) {
       history.push("/")
     }
-    return state.authState.loggedIn ? <Redirect to="/home" /> : <Auth />
+    return state.authState.loggedIn ? <Redirect to="/profile" /> : <Auth />
   }
 
   return (

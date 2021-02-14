@@ -13,14 +13,11 @@ const PORT = process.env.PORT || 5000
 const LobbyList = require('./LobbyList')
 const Database = require('./database')
 const SteamApi = require('./SteamApi')
-const Email = require('./email')
 
 const db = new Database()
 const lobbyList = new LobbyList(io, db)
 const userSocketList: User[] = []
 const steamApi = new SteamApi('392CEE1C5F48960F3C60A8174B2FBE7E')
-const email = new Email('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')
-// email.sendEmailTest()
 
 const removeUserFromLobbies = (socket) => {
   const index = userSocketList.findIndex(

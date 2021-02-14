@@ -17,8 +17,10 @@ class Email {
   sendEmailTest() {
     const cal = this.createCalendarInvite()
 
-    const pathToAttachment = `./tmp/cal-invite.ics`;
-    const attachment = fs.readFileSync(pathToAttachment).toString("base64");
+    // const pathToAttachment = `./tmp/cal-invite.ics`;
+    // const attachment = fs.readFileSync(pathToAttachment).toString("base64");
+    const attachment = cal.toString()
+    console.log('attachment', attachment)
     const msg = {
       to: 'antoineb374@gmail.com', // Change to your recipient
       from: 'antoine.bizon1@ucalgary.ca', // Change to your verified sender
@@ -47,8 +49,10 @@ class Email {
   }
 
   createCalendarInvite() {
-    return {
-      start: [2020, 2, 14, 4, 30],
+    const cal = ical({ domain: "mytestwebsite.com", name: 'My test calendar event' });
+
+    return cal.createEvent({
+      start: new Date(2020, 2, 14, 4, 30),
       duration: { hours: 6, minutes: 30 },
       title: 'Game night!',
       description: 'Time to drop what you\'re doing',
@@ -58,12 +62,12 @@ class Email {
       categories: ['10k races', 'Memorial Day Weekend', 'Boulder CO'],
       status: 'CONFIRMED',
       busyStatus: 'BUSY',
-      organizer: { name: 'Admin', email: 'Race@BolderBOULDER.com' },
+      organizer: { name: 'Admin', email: 'antoine.bizon1@ucalgary.ca' },
       attendees: [
-        { name: 'Adam Gibbons', email: 'adam@example.com', rsvp: true, partstat: 'ACCEPTED', role: 'REQ-PARTICIPANT' },
-        { name: 'Brittany Seaton', email: 'brittany@example2.org', dir: 'https://linkedin.com/in/brittanyseaton', role: 'OPT-PARTICIPANT' }
+        { name: 'Adam Gibbons', email: 'antoineb374@gmail.com', rsvp: true, partstat: 'ACCEPTED', role: 'REQ-PARTICIPANT' }
+        // { name: 'Brittany Seaton', email: 'brittany@example2.org', dir: 'https://linkedin.com/in/brittanyseaton', role: 'OPT-PARTICIPANT' }
       ]
-    }
+    })
   }
 }
 

@@ -34,7 +34,7 @@ class LobbyChat {
       }
       if (msg.messageContents.substring(0, 14) == "/suggest-game")
       {
-        const messageContents = this.suggestGame? "You should play " + this.suggestGame.name + "!" : "No games are available!"
+        const messageContents = this.suggestGame()? "You should play " + this.suggestGame().name + "!" : "No games are available!"
         const helpMessage = {
           username: "Help bot",
           messageContents,

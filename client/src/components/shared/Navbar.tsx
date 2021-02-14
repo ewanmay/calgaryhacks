@@ -26,10 +26,10 @@ export default function Navbar() {
       <BootstrapNavbar.Collapse id="basic-navbar-nav">
         <div className="col-12 p-0 flex space-between">
           <div className="col-auto flex center">
-            <Link className="navlink p-1" to="/home">
+            {/* <Link className="navlink p-1" to="/home">
               <FontAwesomeIcon icon={faHome} className='ic'/>
               Home
-            </Link>
+            </Link> */}
             <Link className="navlink p-1" to="/profile">
               <FontAwesomeIcon icon={faUserCircle} className='ic'/>
               Profile
