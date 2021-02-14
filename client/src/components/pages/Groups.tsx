@@ -34,10 +34,10 @@ function Groups() {
       console.log("LobbyCode:", lobbyCode)
       setInLobby(true)
     })
-    state.socket.emit('join-lobby', {username: state.authState.username, lobbyCode})
+    state.socket.emit('join-lobby', { username: state.authState.username, lobbyCode })
   }
 
-  const leaveLobby = () =>{
+  const leaveLobby = () => {
     console.log("leaving lobby")
     state.socket.emit('leave-lobby')
 
@@ -49,52 +49,53 @@ function Groups() {
     <div className="fill flex center nowrap">
 
       {!inLobby && (
-        <div className="col-6 p-0">
-          <div id="groups-create-lobby">
-            <Button onClick={() => createLobby()}>Create Lobby</Button>
-          </div>
+        <div className="col-6 p-0 flex center column">
 
-          <div id="groups-join-lobby">
+          <div id="groups-join-lobby" className="mt-3">
             <InputGroup className="mb-3">
-                <FormControl
-                  placeholder="Lobby Code"
-                  className="col-12"
-                  aria-label="Lobby Code"
-                  aria-describedby="basic-addon1"
-                  onChange={(value: ChangeEvent<any>) => setLobbyCode(value.target.value)}
-                />
-              </InputGroup>
-            <Button onClick={() => joinLobby()}>Join Lobby</Button>
+              <FormControl
+                placeholder="Lobby Code"
+                className="col-12"
+                aria-label="Lobby Code"
+                aria-describedby="basic-addon1"
+                onChange={(value: ChangeEvent<any>) => setLobbyCode(value.target.value)}
+              />
+              <InputGroup.Append>
+                <Button onClick={() => joinLobby()}>Join Lobby</Button>
+              </InputGroup.Append>
+            </InputGroup>
+          </div>
+          OR
+          <div id="groups-create-lobby" className="m-3">
+            <Button onClick={() => createLobby()}>Create Lobby</Button>
           </div>
         </div>
       )}
       {inLobby && (
         <>
-        <div id='groups'>
-          <div id="groups-top">
-            <div>
-              <b>Code:</b> {lobbyCode}
+          <div id='groups'>
+            <div id="groups-main">
+              <div id="groups-left">
+                <div className="p-3">
+                  <Button onClick={() => leaveLobby()}>Leave Lobby</Button>
+                  <b className="pl-3">Code:</b> {lobbyCode}
+                </div>
+                <Userlist />
+                {/* List of users in lobby? */}
+              </div>
+              <div id="groups-middle">
+                {/* Available game options + randomly selected game to play */}
+              </div>
+              <div id="groups-right">
+                <Chat />
+              </div>
             </div>
-            <Button onClick={() => leaveLobby()}>Leave Lobby</Button>
-          </div>
-          <div id = "groups-main">
-            <div id="groups-left">
-              <Userlist />
-              {/* List of users in lobby? */}
-            </div>
-            <div id="groups-middle">
-              {/* Available game options + randomly selected game to play */}
-            </div>
-            <div id="groups-right">
-              <Chat />
-            </div>
-          </div>
           </div>
         </>
       )}
-      
 
-      
+
+
     </div>
   );
 }

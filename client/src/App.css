@@ -22,6 +22,10 @@
   flex: 1 1;
 }
 
+.cursor {
+  cursor: pointer;
+}
+
 .fit {
   flex: 0 1;
 }

@@ -24,12 +24,13 @@ function Profile() {
           <h4>
             Your Multiplayer Games
           </h4>
-          <div className="col-6 p-0 game-container left">
+          <div className="col-6 p-0 game-container left ">
             {state.profile.steam.games.map((game: Game) => {
               return (
-                <div className="col-12 px-0 game-list-item">
+                <div className="col-12 px-0 game-list-item cursor">
                   <a href={game.website} target="_blank" rel="noreferrer">
-                    {game.name}
+                    {game.name}                    
+                    <i> (Steam)</i>
                   </a>
                 </div>
               )

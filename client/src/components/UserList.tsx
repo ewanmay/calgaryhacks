@@ -1,23 +1,23 @@
 
 import React, { useEffect, useState, useContext } from 'react'
 import { AppContext } from '../context/context'
-import {User} from '../context/types'
+import { User } from '../context/types'
 import './UserList.css'
 
 interface LobbyInfo {
-    users: string[],
-    lobbyCode: string
+  users: string[],
+  lobbyCode: string
 }
 
 function Userlist() {
-    const [state, dispatch] = useContext(AppContext)
-    const [userList, setUserList] = useState([] as string [])
+  const [state, dispatch] = useContext(AppContext)
+  const [userList, setUserList] = useState([] as string[])
 
-    useEffect(() => {
-        state.socket.on('lobby-updated', function ({users}: LobbyInfo) {
-          setUserList(users)
-        })
-      }, [])
+  useEffect(() => {
+    state.socket.on('lobby-updated', function ({ users }: LobbyInfo) {
+      setUserList(users)
+    })
+  }, [])
 
   return (
     <div id='userlist'>

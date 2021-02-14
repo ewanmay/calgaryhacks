@@ -16,6 +16,7 @@ class Database {
         console.log('Connected to SQLite database.')
         this.makeUserTable()
         this.makeSteamGameTable() 
+        this.makeUserSteamGamesTable()
       }
     })
   }
@@ -124,7 +125,24 @@ class Database {
     )
   }
 
-  addSteamGame(appid, game: Game, callback){
+  makeUserSteamGamesTable() {
+    this.db.run(
+      `CREATE TABLE user_steam_games (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        appid INTEGER NOT NULL UNIQUE, 
+        username TEXT NOT NULL UNIQUE
+      )`,
+      (err) => {
+        if (err) {
+          // Table already created
+          console.log('SQLite found table: user_steam_games')
+        } 
+      }
+    )
+  }
+
+  addSteamGame(appid, game: Game, username: string, callback){
+
     const sql = 'INSERT INTO steam_game (appid, name, website, multiplayer) VALUES (?,?,?,?)'
     const params = [appid, game.name, game.website, game.multiplayer]
     this.db.run(sql, params, function (err, result) {
@@ -133,6 +151,11 @@ class Database {
       }
       return callback({ id: this.lastID })
     })
+
+
+    const userGamesListSql = 'INSERT INTO user_steam_games (appid, username)'
+    const userGamesParams = [appid, username]
+    this.db.run(userGamesListSql, userGamesParams, () => {})
   }
 
   getSteamGame(appid, callback){

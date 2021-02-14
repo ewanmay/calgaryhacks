@@ -46,6 +46,24 @@ class SteamApi {
             });
     }
 
+    syncUserGameList(steamid, callback) {
+        axios.get('http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/', {
+            params: {
+                key: this.key,
+                steamid: steamid,
+                format: 'json'
+            }
+            })
+            .then(response =>callback(response.data))
+            .catch(error =>{
+                console.log(error);
+                callback();
+            })
+            .then(function () {
+                // always executed
+            });
+    }
+
     getGameInfo(appid, callback){
         return axios.get(`https://store.steampowered.com/api/appdetails?appids=${appid}`)
             .then(response =>callback(response.data, appid))

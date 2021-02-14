@@ -1,7 +1,8 @@
 export interface State {
   socket: SocketIOClient.Socket,
   authState: AuthState,
-  profile: UserProfile
+  profile: UserProfile,
+  commonGames: CommonGames
 }
 
 export interface AuthState {
@@ -57,6 +58,15 @@ export interface Steam {
 export interface Game {
   name: string,
   multiplayer: boolean,
-  website: string
+  website: string,
+  appid: string,
+  minPlayers?: number,
+  maxPlayers?: number
+}
+
+export interface CommonGames {
+  steamGames: Game[],
+  epicGames: Game[],
+  freeGames: Game[]
 }
 

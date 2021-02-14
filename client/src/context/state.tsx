@@ -20,8 +20,15 @@ export const profile = {
   }
 }
 
+export const commonGames = {  
+  steamGames:  [],
+  epicGames:  [],
+  freeGames: []
+}
+
 export const initialState: State = {
   socket,
   authState,
-  profile
+  profile,
+  commonGames
 }

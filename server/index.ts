@@ -147,13 +147,14 @@ io.on('connection', (socket) => {
 
       // const idsToGet = []
 
-      const apiCallback = (restult: any, appid) => {
-        const game: Game = {
+      const apiCallback = (result: any, appid) => {
+        const game: Game = { 
           name: '',
           multiplayer: false,
-          website: ''
+          website: '',
+          appid:appid
         }
-        const appResponse = restult[appid];
+        const appResponse = result[appid];
         if (appResponse.success) {
           const appData = appResponse.data;
           game.name = appData.name || '';
@@ -161,7 +162,7 @@ io.on('connection', (socket) => {
           game.multiplayer = appData.categories?.some(c => c.id == 1);
         }
 
-        db.addSteamGame(appid, game, () => { })
+        db.addSteamGame(appid, game, username, () => { })
         response.games.push(game)
       }
 
@@ -171,7 +172,8 @@ io.on('connection', (socket) => {
             {
               name: result.name,
               website: result.website,
-              multiplayer: result.multiplayer
+              multiplayer: result.multiplayer,
+              appid:id
             }
           )
         }

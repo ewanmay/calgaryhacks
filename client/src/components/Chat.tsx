@@ -35,7 +35,7 @@ function Message({m}: MessageProps) {
 
   const isSelf = username === state.authState.username
   const msgStyle = {
-    background: isSelf ? 'dodgerblue' : '#eee',
+    background: isSelf ? '#35917d' : '#eee',
     color: isSelf ? 'white' : 'black',
   }
 
