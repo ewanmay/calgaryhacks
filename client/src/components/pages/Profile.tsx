@@ -37,17 +37,16 @@ function Profile() {
       {showSteamModal && (<ConnectSteamModal close={() => { setShowModal(false) }}></ConnectSteamModal>)}
       {showPlayerModal && (<SetPlayerModal game={openGame} close={() => setPlayerModal(false)}></SetPlayerModal>)}
       {steam.games.length > 0 && (
-        <div className="col-12 p-0 flex center left column">
-          <h4 className="col-auto p-2">
+        <div className="col-12 p-0 flex fill center left column">
+          <h4 className="p-1">
             Your Multiplayer Games
           </h4>
-          <div className="col-6 p-0 game-container left flex">
+          <div className="col-6 p-0 game-container left">
             {state.profile.steam.games.map((game: Game) => {
-
               return (
                 <div className="col-12 px-0 game-list-item cursor flex space-between">
                   <a className="col-3" href={game.website} target="_blank" rel="noreferrer">
-                    {game.name}
+                    <b>{game.name}</b>
                     <i> (Steam)</i>
                   </a>
                   <div className="col-3">
@@ -58,7 +57,7 @@ function Profile() {
                     }
                     {!game.minPlayers && !game.maxPlayers &&
                       (<div className="">
-                        <Button onClick={() => { setOpenGame(game); setPlayerModal(true) }}>Provide Players</Button>
+                        <Button onClick={() => { setOpenGame(game); setPlayerModal(true) }}>Set Players</Button>
                       </div>)
                     }
                   </div>

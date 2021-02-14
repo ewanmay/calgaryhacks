@@ -122,21 +122,23 @@ class Lobby {
     const userGameList = [];
 
     const appendUserSteamGames = (rows) => {
+      console.log("Appending rows: ", rows)
       userGameList.push(rows.map((row) => this.convertSteamRowToGameObject(row)))
     }
 
     const filterFinalGames = (rows) => {
+      console.log("Appending rows: ", rows)
       // Get all steam games that have the same appid
       userGameList.push(rows.map((row) => this.convertSteamRowToGameObject(row)))
 
       const filteredSteamGames = [];
       userGameList.forEach((game) => {
-        if(!filteredSteamGames.find((filteredGame) => game.appid === filteredGame.appid)) {
+        if(userGameList.filter((filteredGame) => game.appid === filteredGame.appid).length === this.users.length) {
           filteredSteamGames.push(game)
         }
       })
 
-      this.steamGames = filteredSteamGames;
+      this.steamGames = userGameList;
 
       finishedCallback();
     }

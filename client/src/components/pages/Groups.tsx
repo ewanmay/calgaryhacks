@@ -88,7 +88,6 @@ function Groups() {
                   </div>
                 </div>
                 <Userlist />                
-                <VideoChat roomName={lobbyCode}/>
               </div>
               <div id="groups-middle">
                 <CommonGames></CommonGames>
@@ -97,7 +96,8 @@ function Groups() {
                 <h5>Chat</h5>
                 <Chat />
               </div>
-            </div>
+            </div>          
+            <VideoChat roomName={lobbyCode}/>
           </div>
         </>
       )}

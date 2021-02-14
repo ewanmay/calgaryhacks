@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const VideoParticipant = ({ participant }: any) => {
-  const [videoTracks, setVideoTracks] = useState([]);
-  const [audioTracks, setAudioTracks] = useState([]);
-  const videoRef = useRef();
-  const audioRef = useRef();
+  const [videoTracks, setVideoTracks] = useState([] as any[]);
+  const [audioTracks, setAudioTracks] = useState([] as any[]);
+  const videoRef = useRef<HTMLVideoElement>({} as any) as React.RefObject<HTMLVideoElement>;
+  const audioRef = useRef<HTMLAudioElement>({} as any) as React.RefObject<HTMLVideoElement>
 
+  const trackpubsToTracks = (trackMap: any) => Array.from(trackMap.values())
+      .map((publication: any) => publication.track)
+      .filter((track: any) => track !== null);
 
   useEffect(() => {
     const trackSubscribed = (track: any) => {
@@ -16,11 +19,11 @@ const VideoParticipant = ({ participant }: any) => {
       }
     };
 
-    const trackUnsubscribed = track => {
+    const trackUnsubscribed = (track: any) => {
       if (track.kind === 'video') {
-        setVideoTracks(videoTracks => videoTracks.filter(v => v !== track));
+        setVideoTracks((videoTracks: any)  => videoTracks.filter((v: any) => v !== track));
       } else {
-        setAudioTracks(audioTracks => audioTracks.filter(a => a !== track));
+        setAudioTracks((audioTracks: any) => audioTracks.filter((a: any) => a !== track));
       }
     };
 
@@ -59,8 +62,8 @@ const VideoParticipant = ({ participant }: any) => {
 
   return (
     <div className="participant">
-      <h3>{participant.identity}</h3>
-      <video ref={videoRef} autoPlay={true} />
+      <h5>{participant.identity}</h5>
+      <video ref={videoRef} autoPlay={true} className='video'/>
       <audio ref={audioRef} autoPlay={true} muted={true} />
     </div>
   );

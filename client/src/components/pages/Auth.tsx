@@ -38,7 +38,7 @@ function Auth() {
 
 
   return (
-    <div className="col-12 p-0 flex center" onKeyPress ={(e) => { if (e.key === "Enter") { logIn() } }}>
+    <div className="col-12 p-0 fill flex center" onKeyPress ={(e) => { if (e.key === "Enter") { logIn() } }}>
       <div className="col-4 p-0 flex center">
         <h3>Welcome to Games Night</h3>
         <div className="error-message col-12">

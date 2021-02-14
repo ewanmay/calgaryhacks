@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../context/context';
 import Video from 'twilio-video';
 import { Button } from 'react-bootstrap';
-
+import VideoParticipant from './VideoParticipant'
 interface Props {
   roomName: string
 }
@@ -46,7 +46,7 @@ const VideoChat = ({ roomName }: Props) => {
     };
   }, [roomName, token]);
 
-  const handleLeave = () => {
+  const leaveVideo = () => {
     setToken("");
   };
 
@@ -59,17 +59,26 @@ const VideoChat = ({ roomName }: Props) => {
   };
 
 
+  const remoteParticipants = participants.map((participant: any) => (
+    <VideoParticipant key={participant.sid} participant={participant} />
+  ));
+
+
   if (token) {
     return (
-      <div>
-        <p>Username: {state.authState.username}</p>
-        <p>Room name: {roomName}</p>
-        <p>Token: {token}</p>
-        {room ? (
-          <p key={room?.localParticipant?.sid}>{room?.localParticipant?.identity}</p>
-        ) : (
-            ''
-          )}
+      <div id='video-chat-container'>  
+        <div id='video-chat'>
+          {room && (
+            <VideoParticipant
+              key={room?.localParticipant?.sid}
+              participant={room?.localParticipant}
+            />
+          )}          
+          {remoteParticipants}
+        </div>
+        <div className="col-1">
+          <Button onClick={leaveVideo}>Leave Video</Button>
+        </div>
       </div>
     );
   }

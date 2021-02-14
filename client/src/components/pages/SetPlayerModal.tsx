@@ -12,7 +12,7 @@ function SetPlayerModal({ close, game }: ConnectSteamModalProps) {
   const [state, dispatch] = useContext(AppContext)
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(0)
-  const [inputError, setInputErro] = useState("")
+  const [inputError, setInputError] = useState("")
 
   const isNumeric = (str: string) => {
     if (typeof str != "string") return false // we only process strings!  
@@ -24,10 +24,10 @@ function SetPlayerModal({ close, game }: ConnectSteamModalProps) {
 
   const setMinPlayers = (appid: any, minPlayers: string) => {
     if (!isNumeric(minPlayers)) {
-      setInputErro("Min needs to be numeric")
+      setInputError("Min needs to be numeric")
     }
     else {
-      setInputErro("")
+      setInputError("")
     }
     state.socket.emit('change-game-min-players', ({ appid, minPlayers }))
     setMin(parseInt(minPlayers.trim()))
@@ -35,11 +35,11 @@ function SetPlayerModal({ close, game }: ConnectSteamModalProps) {
 
   const setMaxPlayers = (appid: any, maxPlayers: string) => {
     if (!isNumeric(maxPlayers)) {
-      setInputErro("Max needs to be numeric")
+      setInputError("Max needs to be numeric")
       return
     }
     else {
-      setInputErro("")
+      setInputError("")
       state.socket.emit('change-game-max-players', ({ appid, maxPlayers }))
       setMax(parseInt(maxPlayers.trim()))
     }
@@ -48,10 +48,10 @@ function SetPlayerModal({ close, game }: ConnectSteamModalProps) {
   const setMinMaxPlayers = () => {
 
     if (min > max) {
-      setInputErro("Max needs to be greater than or equal to minimum players allowed")
+      setInputError("Max needs to be greater than or equal to minimum players allowed")
     }
     else {
-      setInputErro("")
+      setInputError("")
       state.socket.emit('update-preferred-players', state.authState.username, game.appid, min, max)
       close();
     }

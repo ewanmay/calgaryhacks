@@ -161,9 +161,9 @@ class Database {
     const params = [from, to]
     this.db.run(sql, params, function (err, result) {
       if (err) {
-        return callback(err.message)
+        return callback(false)
       }
-      return callback({ id: this.lastID })
+      return callback(true)
     })
   }
 
@@ -249,9 +249,21 @@ class Database {
   }
 
   getUserSteamGames(username, callback){
-    const sql = 'SELECT * FROM user_steam_games INNER JOIN steam_game ON user_steam_games.appid=steam_game.appid AND user_steam_games.username= ? ' 
+
+    console.log("Using username: " + username)
+    const sql = 'SELECT * FROM user_steam_games INNER JOIN steam_game ON user_steam_games.appid=steam_game.appid WHERE user_steam_games.username=?' 
     const params = [username]
     this.db.all(sql, params, function (err, rows) {
+      if (err) {
+      }
+      console.log("[getUserSteamInfo]: ", rows)
+    })
+
+    console.log("Using username: " + username)
+    const newSql = 'SELECT * FROM user_steam_games INNER JOIN steam_game ON user_steam_games.appid=steam_game.appid WHERE user_steam_games.username=?' 
+    // const sql = 'SELECT * FROM user_steam_games INNER JOIN steam_game ON user_steam_games.appid=steam_game.appid' 
+    const newParams = [username]
+    this.db.all(newSql, newParams, function (err, rows) {
       if (err) {
         return callback(err.message)
       }
@@ -286,9 +298,21 @@ class Database {
   }
 
   addUserSteamGame(appid, username: string){
-    const userGamesListSql = 'INSERT INTO user_steam_games (appid, username)'
+    const userGamesListSql = 'INSERT INTO user_steam_games (appid, username) VALUES (?, ?)'
     const userGamesParams = [appid, username]
     this.db.run(userGamesListSql, userGamesParams, () => {})
+  }
+
+  getUserSteamGame(appid, username: string, callback){
+    const sql = 'SELECT * from user_steam_games where appid = ? and username = ?'
+    const params = [appid,username]
+    this.db.run(sql, params, (err, row) => {
+      if (err) {
+        console.log('ERROR getUserSteamGame', err.message)
+        return callback(err.message, appid)
+      }
+      return callback(row, appid) 
+    })
   }
 
   getSteamGame(appid, callback){

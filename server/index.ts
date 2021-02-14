@@ -132,7 +132,7 @@ io.on('connection', (socket) => {
 
 
   socket.on('update-preferred-players', (username: string, appid:string, min:number, max:number) => {
-    console.log('adding steam id: ', username, appid)
+    console.log('update-preferred-players: ', username, appid, min, max)
     const sendResponseToClient = (success) => {
       console.log('success: ', success)
       socket.emit('preferred-players-updated', success)
@@ -253,19 +253,45 @@ io.on('connection', (socket) => {
   socket.on('get-steam-info', (username: string) => getSteamInfo(username))
 
   socket.on('send-friend-request', (from: string, to: string) => {
-    // TODO anything?
+    console.log('send-friend-request', from, to)
+    const sendResponseToClient = (success) => {
+      console.log('added request: ', success)
+      socket.emit('send-friend-request-response', success)
+    }
+    db.addFriendRequest(from, to, sendResponseToClient)
   })
 
   socket.on('accept-friend-request', (id: number) => {
-    // TODO anything?
+    const addFriend = (row) => {
+      const to = row.to
+      const from = row.from
+      if(to && from){
+        db.addFriend(to, from, ()=>{})
+        db.addFriend(from, to, ()=>{})
+        db.deleteFriendRequest(id, ()=>{})
+      }else{
+        socket.emit('accept-friend-request-response', false)
+      }
+    }
+    db.getFriendRequest(id, addFriend)
   })
 
-  socket.on('get-incoming-friend-requests', (from: string, to: string) => {
-    // TODO anything?
+  socket.on('get-incoming-friend-requests', (username: string) => {
+    console.log('get-incoming-friend-requests', username)
+    const sendResponseToClient = (rows) => {
+      console.log('added request: ', rows)
+      socket.emit('get-incoming-friend-requests-response', rows)
+    }
+    db.getIncommingRequests(username, sendResponseToClient)
   })
 
-  socket.on('get-outgoing-friend-requests', (from: string, to: string) => {
-    // TODO anything?
+  socket.on('get-outgoing-friend-requests', (username: string) => {
+    console.log('get-outgoing-friend-requests', username)
+    const sendResponseToClient = (rows) => {
+      console.log('added request: ', rows)
+      socket.emit('get-outgoing-friend-requests-response', rows)
+    }
+    db.getOutgoingRequests(username, sendResponseToClient)
   })
 
 
