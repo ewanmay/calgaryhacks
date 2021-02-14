@@ -48,7 +48,7 @@ export interface UserProfile {
 
 export interface Steam {
   steamUsername: string
-  
+  steamError: string,
   profileUrl: string,
   avatarUrl: string,
   games: Game[]

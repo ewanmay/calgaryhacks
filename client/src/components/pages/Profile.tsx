@@ -1,32 +1,41 @@
 import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
 import { Button, FormControl, InputGroup } from 'react-bootstrap';
 import { AppContext } from '../../context/context';
+import { Game } from '../../context/types';
+import ConnectSteamModal from './ConnectSteamModal';
+import './Profile.css';
 
 function Profile() {
   const [state, dispatch] = useContext(AppContext)
   const [steamId, setSteamId] = useState("")
+  const [showSteamModal, setShowModal] = useState(false)
+  const steam = state.profile.steam
 
   useEffect(() => {
+    state.socket.emit("get-steam-info", state.authState.username)
   }, [])
 
-
-  const connectSteamId = () => {
-    state.socket.emit("add-steamid", steamId)
-  }
-
-
   return (
-    <div className="">
-      {state.profile.steam.steamUsername.length === 0 && (<InputGroup className="mb-3">
-        Connect steam ID 
-        <FormControl
-          placeholder="Steam ID"
-          aria-label="Steam ID"
-          aria-describedby="basic-addon2"
-          onChange={(value: ChangeEvent<any>) => setSteamId(value.target.value)}
-        />
-        <Button onClick={connectSteamId}>Connect</Button>
-      </InputGroup>)}
+    <div className="fill col-12 p-0 flex center column">
+      {steam.steamUsername.length === 0 && (<Button onClick={() => setShowModal(true)}>Connect Steam Account</Button>)}
+      {showSteamModal && (<ConnectSteamModal close={() => {setShowModal(false)}}></ConnectSteamModal>)}
+      {steam.games.length > 0 && (
+        <div className="col-12 p-0 flex center left column">
+          <h4>
+            Your Games
+          </h4>
+          <div className="col-6 p-0 game-container left">
+            {state.profile.steam.games.map((game: Game) => {
+              return (
+                <div className="col-12 p-0 game-list-item">
+                  <a href={game.website} target="_blank" rel="noreferrer">
+                    {game.name}
+                  </a>
+                </div>
+              )
+            })}
+          </div>
+        </div>)}
     </div>
 
   );

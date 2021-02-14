@@ -15,7 +15,8 @@ export const profile = {
     steamUsername: "",
     profileUrl: "",
     avatarUrl: "",
-    games: []
+    games: [],
+    steamError: ""
   }
 }
 

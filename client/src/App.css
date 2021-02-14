@@ -31,6 +31,11 @@
   vertical-align: center;
 }
 
+div .top {
+  align-content: flex-start;
+  align-items: flex-start;
+}
+
 .left {
   justify-content: flex-start;
   align-items: center;
@@ -49,4 +54,8 @@
 
 .space-between {
   justify-content: space-between;
+}
+
+.nowrap {
+    flex-wrap: nowrap;
 }

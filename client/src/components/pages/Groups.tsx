@@ -1,39 +1,66 @@
 import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../context/context';
-import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
+import { Widget, addResponseMessage, deleteMessages, renderCustomComponent } from 'react-chat-widget';
 import 'react-chat-widget/lib/styles.css';
 import { ServerMessage } from '../../context/types';
+import Userlist from '../UserList'
+import Chat from '../Chat';
 
 import { Button, FormControl, InputGroup } from 'react-bootstrap';
+
+import './Groups.css'
 
 function Groups() {
   const [state, dispatch] = useContext(AppContext)
   const [lobbyCode, setLobbyCode] = useState('')
   const [inLobby, setInLobby] = useState(false)
+
+  // const handleGotMessage = (msg: ServerMessage) => {
+  //     // console.log('MY USERNAME: ' + state.authState.username)
+  //     console.log('got chat msg', msg)
+  //     // if(state.authState.username !== msg.username){
+  //       addResponseMessage(extractMsg(msg))//, msg.username)
+        
+  //       //@ts-ignore
+  //       // renderCustomComponent(CustomMessageComponent(msg), {}, false)
+  //     // }
+  //   }
   
   useEffect(() => {
+    state.socket.off('chat-message');
     state.socket.on('chat-message', (msg: ServerMessage) => {
-      console.log('MY USERNAME: ' + state.authState.username)
       console.log('got chat msg', msg)
-      if(state.authState.username !== msg.username){
-        addResponseMessage(formattedServerMessage(msg))
-      }
+      addResponseMessage(extractMsg(msg))//, msg.username)
+      //@ts-ignore
+      renderCustomComponent(CustomMessageComponent(msg), {}, false)
     })
-  }, [])
+    return () => deleteMessages(99999999)
+  }, [state.socket])
+  
+  const extractMsg = (msg: ServerMessage): string => {
+    return msg.messageContents
+  }
 
   const handleNewUserMessage = (newMessage: string) => {
     console.log(`New message sending out: ${newMessage}`);
     state.socket.emit('add-chat-message', {messageContents: newMessage, username: state.authState.username})
   }
 
-  const formattedServerMessage: (msg: ServerMessage) => string = (msg: ServerMessage) => {
-    return "###" + msg.username + "<br>" + msg.messageContents;
-    // return msg.messageContents
+  const CustomMessageComponent = (msg: ServerMessage) => {
+    return (
+      <div>
+        msg.username
+        <br />
+      <div>
+          msg.messageContents
+        </div>
+      </div>
+    )
   }
+
 
   const createLobby = () => {
     // Ask server to create lobby
-    state.socket.emit('create-lobby', {username: state.authState.username});
 
     // Once created, set lobby code and change what we display somehow
     state.socket.once('join-lobby-err', (msg: any) => console.log(msg)) // TODO
@@ -41,23 +68,29 @@ function Groups() {
       setInLobby(true)
       setLobbyCode(res.lobbyCode)
     })
+    state.socket.emit('create-lobby', state.authState.username);
   }
 
   const joinLobby = () => {
-    state.socket.emit('join-lobby', {username: state.authState.username, lobbyCode})
     console.log("Clicked join lobby")
     state.socket.once('join-lobby-err', (msg: any) => console.log(msg)) // TODO
     state.socket.once('joined-lobby', ({ lobbyCode, users }: any) => {
-      if(!lobbyCode) {
-        
-      }
+      console.log("LobbyCode:", lobbyCode)
       setInLobby(true)
-      console.log("LobbyCode: ", lobbyCode)
     })
+    state.socket.emit('join-lobby', {username: state.authState.username, lobbyCode})
   }
 
+  const leaveLobby = () =>{
+    console.log("leaving lobby")
+    state.socket.emit('leave-lobby')
+
+    setInLobby(false)
+    setLobbyCode('')
+  }
+  
   return (
-    <div id="groups" className="fill flex center">
+    <div className="fill flex center nowrap">
 
       {!inLobby && (
         <div className="col-6 p-0">
@@ -81,14 +114,33 @@ function Groups() {
       )}
       {inLobby && (
         <>
-        <p>
-          You are in the lobby {lobbyCode}
-        </p>
-        <Widget 
-          handleNewUserMessage={handleNewUserMessage}
-          handleSubmit={(message: string) => {}}
-          showTimeStamp = {true}
-          />
+        <div id='groups'>
+          <div id="groups-top">
+            <div>
+              <b>Code:</b> {lobbyCode}
+            </div>
+            <Button onClick={() => leaveLobby()}>Leave Lobby</Button>
+          </div>
+          <div id = "groups-main">
+            <div id="groups-left">
+              <Userlist />
+              {/* List of users in lobby? */}
+            </div>
+            <div id="groups-middle">
+              {/* Available game options + randomly selected game to play */}
+            </div>
+            <div id="groups-right">
+              <Chat />
+            </div>
+          </div>
+          {/* <Widget 
+            handleNewUserMessage={(message: string) => {}}
+            handleSubmit={handleNewUserMessage}
+            showTimeStamp = {true}
+            title="Group Chat"
+            subtitle = {"Lobby: " + lobbyCode}
+          /> */}
+          </div>
         </>
       )}
       

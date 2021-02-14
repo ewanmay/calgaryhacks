@@ -8,13 +8,17 @@ import Groups from './components/pages/Groups';
 import Profile from './components/pages/Profile';
 import Register from './components/pages/Register';
 import Navbar from './components/shared/Navbar';
+import { Steam } from './context/types';
 function App() {
   const [state, dispatch] = useContext(AppContext)
 
   useEffect(() => {
     setInterval(() => state.socket.emit("hello"), 2000);
     state.socket.on('hello-response', () => console.log("server said hello"));
-  }, [])
+    state.socket.on("get-steam-info-response", (data: Steam) => {
+      dispatch({ type: "GET_STEAM_INFO", payload: data })
+    })
+  }, [dispatch, state.authState, state.socket])
 
   const history = useHistory()
 
@@ -26,7 +30,7 @@ function App() {
   }
 
   return (
-    <div className="App flex column">
+    <div className="App flex column nowrap">
       {state.authState.loggedIn && <Navbar></Navbar>}
       {handleNoAuth()}
       <Switch>

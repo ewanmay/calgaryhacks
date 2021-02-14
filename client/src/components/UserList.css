@@ -1,0 +1,25 @@
+
+#userlist {
+  width: 20vw;
+  word-break: break-all;
+  background: #eee;
+  font-size: small;
+  text-align: center;
+  padding: 7px;
+  border-radius: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 3px solid;
+  max-height: 70vh;
+}
+#userlist div {
+  border-bottom: 0.1px solid black;
+  padding-bottom: 7px;
+  margin: 0 -10px;
+}
+#userlist p {
+  margin: 7px 0;
+  background: ghostwhite;
+  border-radius: 25px;
+  padding: 5px 10px;
+}
